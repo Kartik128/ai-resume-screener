@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && !error.config._retry) {
+    if (error.response?.status === 401 && !error.config._retry && !error.config.url?.includes('/auth/refresh') && !error.config.url?.includes('/auth/me')) {
       error.config._retry = true;
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
@@ -31,7 +31,6 @@ api.interceptors.response.use(
         } catch (e) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
-          window.location.href = '/login';
         }
       }
     }
