@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ai-resume-screener
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PROJECT_NAME
+        value: TalentAI Copilot
