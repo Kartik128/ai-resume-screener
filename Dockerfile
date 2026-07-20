@@ -39,6 +39,7 @@ COPY backend /app/backend
 
 # Copy Built Static React Distribution from Stage 1
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
+COPY --from=frontend-builder /app/frontend/dist /app/backend/frontend_dist
 
 WORKDIR /app/backend
 

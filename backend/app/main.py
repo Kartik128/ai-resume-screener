@@ -107,26 +107,41 @@ from fastapi.responses import FileResponse
 # Include Routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-project_root = Path(__file__).resolve().parent.parent.parent
-frontend_dist = project_root / "frontend" / "dist"
+# Multi-candidate frontend dist resolution
+candidate_paths = [
+    Path(__file__).resolve().parent.parent.parent / "frontend" / "dist",
+    Path(__file__).resolve().parent.parent / "frontend_dist",
+    Path.cwd() / "frontend" / "dist",
+    Path.cwd().parent / "frontend" / "dist",
+]
 
-if frontend_dist.exists() and (frontend_dist / "index.html").exists():
-    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+frontend_dist = None
+for p in candidate_paths:
+    if p.exists() and (p / "index.html").exists():
+        frontend_dist = p
+        break
+
+if frontend_dist:
+    logger.info(f"Serving SPA frontend from: {frontend_dist}")
+    assets_dir = frontend_dist / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
-        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi.json") or full_path.startswith("redoc"):
+        if full_path.startswith("api/") or full_path == "api" or full_path.startswith("docs") or full_path.startswith("openapi.json") or full_path.startswith("redoc"):
             raise StarletteHTTPException(status_code=404)
         file_path = frontend_dist / full_path
         if full_path and file_path.exists() and file_path.is_file():
             return FileResponse(file_path)
         return FileResponse(frontend_dist / "index.html")
 else:
+    logger.warning("SPA frontend dist not found. Serving default API root response.")
     @app.get("/", include_in_schema=False)
     async def root():
         return {
             "message": f"Welcome to {settings.PROJECT_NAME} API",
             "version": settings.VERSION,
             "docs": "/docs",
-            "health": f"{settings.API_V1_STR}/health",
+        }    "health": f"{settings.API_V1_STR}/health",
         }
