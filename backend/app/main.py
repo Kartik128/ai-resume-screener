@@ -271,14 +271,64 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                     match_breakdown={
                         "overall_score": 92.5,
                         "match_summary": "Excellent frontend developer. Matches React, TypeScript, and Next.js requirements perfectly.",
-                        "mandatory_skills": {"raw_score": 100.0, "reasoning": "React, TypeScript, TailwindCSS, Next.js present.", "citations": []},
-                        "nice_to_have_skills": {"raw_score": 0.0, "reasoning": "No nice-to-have skills required.", "citations": []},
-                        "experience": {"raw_score": 95.0, "reasoning": "6.0 years experience exceeds the 4-year requirement.", "citations": []},
-                        "education": {"raw_score": 90.0, "reasoning": "Relevant software background.", "citations": []},
-                        "location": {"raw_score": 100.0, "reasoning": "Based in New York, NY (Office match).", "citations": []},
-                        "career_stability": {"raw_score": 90.0, "reasoning": "Good tenure history.", "citations": []},
-                        "industry_match": {"raw_score": 90.0, "reasoning": "Strong product development background.", "citations": []},
-                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                        "confidence_score": 95.0,
+                        "risks": [],
+                        "mandatory_skills": {
+                            "weight_percentage": 40.0,
+                            "raw_score": 100.0,
+                            "weighted_score": 40.0,
+                            "reasoning": "React, TypeScript, TailwindCSS, Next.js present.",
+                            "citations": []
+                        },
+                        "nice_to_have_skills": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "No nice-to-have skills required.",
+                            "citations": []
+                        },
+                        "experience": {
+                            "weight_percentage": 20.0,
+                            "raw_score": 95.0,
+                            "weighted_score": 19.0,
+                            "reasoning": "6.0 years experience exceeds the 4-year requirement.",
+                            "citations": []
+                        },
+                        "education": {
+                            "weight_percentage": 5.0,
+                            "raw_score": 90.0,
+                            "weighted_score": 4.5,
+                            "reasoning": "Relevant software background.",
+                            "citations": []
+                        },
+                        "location": {
+                            "weight_percentage": 3.0,
+                            "raw_score": 100.0,
+                            "weighted_score": 3.0,
+                            "reasoning": "Based in New York, NY (Office match).",
+                            "citations": []
+                        },
+                        "career_stability": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 90.0,
+                            "weighted_score": 9.0,
+                            "reasoning": "Good tenure history.",
+                            "citations": []
+                        },
+                        "industry_match": {
+                            "weight_percentage": 8.0,
+                            "raw_score": 90.0,
+                            "weighted_score": 7.2,
+                            "reasoning": "Strong product development background.",
+                            "citations": []
+                        },
+                        "certifications": {
+                            "weight_percentage": 4.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "No certifications matching.",
+                            "citations": []
+                        }
                     }
                 )
                 db.add(s1)
@@ -300,14 +350,64 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                     match_breakdown={
                         "overall_score": 89.0,
                         "match_summary": "Strong Cloud Architect. Demonstrates deep AWS, Docker, Kubernetes, and Terraform expertise.",
-                        "mandatory_skills": {"raw_score": 95.0, "reasoning": "AWS, Docker, Kubernetes, Terraform present.", "citations": []},
-                        "nice_to_have_skills": {"raw_score": 50.0, "reasoning": "Go present, missing GraphQL.", "citations": []},
-                        "experience": {"raw_score": 92.0, "reasoning": "7.5 years experience fits the 5-year target.", "citations": []},
-                        "education": {"raw_score": 85.0, "reasoning": "Technical background.", "citations": []},
-                        "location": {"raw_score": 100.0, "reasoning": "San Francisco base matches job posting details.", "citations": []},
-                        "career_stability": {"raw_score": 85.0, "reasoning": "Average tenure of 2.5 years per role.", "citations": []},
-                        "industry_match": {"raw_score": 90.0, "reasoning": "Infrastructure cloud architect focus.", "citations": []},
-                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                        "confidence_score": 92.0,
+                        "risks": [],
+                        "mandatory_skills": {
+                            "weight_percentage": 40.0,
+                            "raw_score": 95.0,
+                            "weighted_score": 38.0,
+                            "reasoning": "AWS, Docker, Kubernetes, Terraform present.",
+                            "citations": []
+                        },
+                        "nice_to_have_skills": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 50.0,
+                            "weighted_score": 5.0,
+                            "reasoning": "Go present, missing GraphQL.",
+                            "citations": []
+                        },
+                        "experience": {
+                            "weight_percentage": 20.0,
+                            "raw_score": 92.0,
+                            "weighted_score": 18.4,
+                            "reasoning": "7.5 years experience fits the 5-year target.",
+                            "citations": []
+                        },
+                        "education": {
+                            "weight_percentage": 5.0,
+                            "raw_score": 85.0,
+                            "weighted_score": 4.25,
+                            "reasoning": "Technical background.",
+                            "citations": []
+                        },
+                        "location": {
+                            "weight_percentage": 3.0,
+                            "raw_score": 100.0,
+                            "weighted_score": 3.0,
+                            "reasoning": "San Francisco base matches job posting details.",
+                            "citations": []
+                        },
+                        "career_stability": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 85.0,
+                            "weighted_score": 8.5,
+                            "reasoning": "Average tenure of 2.5 years per role.",
+                            "citations": []
+                        },
+                        "industry_match": {
+                            "weight_percentage": 8.0,
+                            "raw_score": 90.0,
+                            "weighted_score": 7.2,
+                            "reasoning": "Infrastructure cloud architect focus.",
+                            "citations": []
+                        },
+                        "certifications": {
+                            "weight_percentage": 4.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "No certifications matching.",
+                            "citations": []
+                        }
                     }
                 )
                 db.add(s2)
@@ -329,14 +429,64 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                     match_breakdown={
                         "overall_score": 45.0,
                         "match_summary": "Underqualified developer. Missing React, TypeScript, and TailwindCSS framework skills.",
-                        "mandatory_skills": {"raw_score": 35.0, "reasoning": "Only general Javascript present. Missing React and TypeScript.", "citations": []},
-                        "nice_to_have_skills": {"raw_score": 0.0, "reasoning": "", "citations": []},
-                        "experience": {"raw_score": 40.0, "reasoning": "2.0 years experience is below the 4-year requirement.", "citations": []},
-                        "education": {"raw_score": 80.0, "reasoning": "Basic degree.", "citations": []},
-                        "location": {"raw_score": 0.0, "reasoning": "Based in London (Job is in NY).", "citations": []},
-                        "career_stability": {"raw_score": 90.0, "reasoning": "Stable junior trajectory.", "citations": []},
-                        "industry_match": {"raw_score": 50.0, "reasoning": "Limited commercial experience.", "citations": []},
-                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                        "confidence_score": 85.0,
+                        "risks": ["Underqualified", "Location gap"],
+                        "mandatory_skills": {
+                            "weight_percentage": 40.0,
+                            "raw_score": 35.0,
+                            "weighted_score": 14.0,
+                            "reasoning": "Only general Javascript present. Missing React and TypeScript.",
+                            "citations": []
+                        },
+                        "nice_to_have_skills": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "No nice-to-have skills present.",
+                            "citations": []
+                        },
+                        "experience": {
+                            "weight_percentage": 20.0,
+                            "raw_score": 40.0,
+                            "weighted_score": 8.0,
+                            "reasoning": "2.0 years experience is below the 4-year requirement.",
+                            "citations": []
+                        },
+                        "education": {
+                            "weight_percentage": 5.0,
+                            "raw_score": 80.0,
+                            "weighted_score": 4.0,
+                            "reasoning": "Basic degree.",
+                            "citations": []
+                        },
+                        "location": {
+                            "weight_percentage": 3.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "Based in London (Job is in NY).",
+                            "citations": []
+                        },
+                        "career_stability": {
+                            "weight_percentage": 10.0,
+                            "raw_score": 90.0,
+                            "weighted_score": 9.0,
+                            "reasoning": "Stable junior trajectory.",
+                            "citations": []
+                        },
+                        "industry_match": {
+                            "weight_percentage": 8.0,
+                            "raw_score": 50.0,
+                            "weighted_score": 4.0,
+                            "reasoning": "Limited commercial experience.",
+                            "citations": []
+                        },
+                        "certifications": {
+                            "weight_percentage": 4.0,
+                            "raw_score": 0.0,
+                            "weighted_score": 0.0,
+                            "reasoning": "No certifications matching.",
+                            "citations": []
+                        }
                     }
                 )
                 db.add(s3)
