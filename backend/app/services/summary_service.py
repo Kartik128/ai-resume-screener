@@ -69,8 +69,8 @@ class SummaryService:
         cand_exp = float(parsed_resume.get("total_experience_years") or 0.0)
         req_min_exp = float(job.min_experience_years or 0.0)
 
-        mand_skills = parsed_job.get("mandatory_skills", [])
-        cand_skills = [s.get("name") for s in parsed_resume.get("skills", [])]
+        mand_skills = [s.get("name", s) if isinstance(s, dict) else s for s in parsed_job.get("mandatory_skills", [])]
+        cand_skills = [s.get("name") for s in parsed_resume.get("skills", []) if s.get("name")]
 
         missing_skills: List[str] = []
         if mand_skills:
