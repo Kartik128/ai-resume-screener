@@ -440,6 +440,11 @@ class SkillTaxonomyService:
             # Generic adjectives/adverbs often appearing in JDs
             "Proven", "Demonstrated", "Exceptional", "Outstanding", "Excellent", "Strong",
             "Hands", "On", "Extensive", "Solid", "Relevant", "Related", "Significant",
+            # Common verbs/adverbs that should be ignored as skills
+            "Design", "Implement", "Maintain", "Create", "Manage", "Deploy", "Build", 
+            "Develop", "Run", "Write", "Collaborate", "Deliver", "Deliverables", "Deliverable", 
+            "Support", "Define", "Identify", "Provide", "Ensure", "Review", "Focus", "Lead", 
+            "Coordinate", "Integrate", "Scale", "Optimize", "Evaluate", "Analyze", "Verify"
         }
 
         # Patterns for metadata that should never be a skill even if capitalized
