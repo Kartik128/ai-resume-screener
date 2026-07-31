@@ -143,6 +143,36 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 db.add(job_2)
                 await db.flush()
 
+                # Associate Skills with Jobs (required by the UI to list mandatory skills and filter candidates)
+                from app.models.skill import Skill
+                from app.models.job import JobSkill
+
+                async def add_job_skill(job_id, name, category, is_mandatory=True, weight=1.0):
+                    skill_res = await db.execute(select(Skill).where(Skill.name == name))
+                    skill = skill_res.scalar_one_or_none()
+                    if not skill:
+                        skill = Skill(name=name, category=category, synonyms=[])
+                        db.add(skill)
+                        await db.flush()
+                    js = JobSkill(job_id=job_id, skill_id=skill.id, is_mandatory=is_mandatory, weight=weight)
+                    db.add(js)
+
+                # Skills for Senior Cloud Architect (job_1)
+                await add_job_skill(job_1.id, "AWS", "Cloud Platform", is_mandatory=True, weight=40.0)
+                await add_job_skill(job_1.id, "Docker", "Containerization", is_mandatory=True, weight=20.0)
+                await add_job_skill(job_1.id, "Kubernetes", "Containerization", is_mandatory=True, weight=20.0)
+                await add_job_skill(job_1.id, "Terraform", "DevOps", is_mandatory=True, weight=20.0)
+                await add_job_skill(job_1.id, "Go", "Programming Language", is_mandatory=False, weight=50.0)
+                await add_job_skill(job_1.id, "GraphQL", "API Technology", is_mandatory=False, weight=50.0)
+
+                # Skills for Lead Frontend Engineer (job_2)
+                await add_job_skill(job_2.id, "React", "Web Framework", is_mandatory=True, weight=40.0)
+                await add_job_skill(job_2.id, "TypeScript", "Programming Language", is_mandatory=True, weight=30.0)
+                await add_job_skill(job_2.id, "TailwindCSS", "Frontend", is_mandatory=True, weight=15.0)
+                await add_job_skill(job_2.id, "Next.js", "Web Framework", is_mandatory=True, weight=15.0)
+
+                await db.flush()
+
                 # 3. Create Candidates
                 # Cand 1 for Job 2
                 cand_1 = Candidate(
