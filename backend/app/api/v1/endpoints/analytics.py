@@ -81,8 +81,8 @@ async def ask_analytics(
         """)
         res = await db.execute(stmt, {"company_id": company_id})
         row = res.one_or_none()
-        total_apps = row.total_apps if row else 0
-        hired_count = row.hired_count if row else 0
+        total_apps = row[0] if row and row[0] is not None else 0
+        hired_count = row[1] if row and row[1] is not None else 0
 
         headline = "Average time-to-hire is currently 18.5 days across active roles."
         data_points = [
