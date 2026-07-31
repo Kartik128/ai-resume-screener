@@ -251,16 +251,95 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 db.add(app_3)
                 await db.flush()
 
-                # 6. Pre-calculate Scores
-                score_repo = ScoreRepository(db)
-                for j, r, c in [(job_2, r1, cand_1), (job_1, r2, cand_2), (job_2, r3, cand_3)]:
-                    breakdown = await ScoringEngineService.evaluate_candidate(j, r)
-                    await score_repo.save_or_update_score(
-                        job_id=j.id,
-                        candidate_id=c.id,
-                        resume_id=r.id,
-                        breakdown=breakdown
-                    )
+                # 6. Pre-calculate Scores (Offline seeding to prevent OpenAI credit/API failure blockers)
+                from app.models.score import Score
+                
+                s1 = Score(
+                    job_id=job_2.id,
+                    candidate_id=cand_1.id,
+                    resume_id=r1.id,
+                    overall_score=92.5,
+                    mandatory_skills_score=100.0,
+                    nice_skills_score=0.0,
+                    experience_score=95.0,
+                    education_score=90.0,
+                    industry_score=90.0,
+                    location_score=100.0,
+                    stability_score=90.0,
+                    certification_score=0.0,
+                    semantic_similarity=1.0,
+                    match_breakdown={
+                        "overall_score": 92.5,
+                        "match_summary": "Excellent frontend developer. Matches React, TypeScript, and Next.js requirements perfectly.",
+                        "mandatory_skills": {"raw_score": 100.0, "reasoning": "React, TypeScript, TailwindCSS, Next.js present.", "citations": []},
+                        "nice_to_have_skills": {"raw_score": 0.0, "reasoning": "No nice-to-have skills required.", "citations": []},
+                        "experience": {"raw_score": 95.0, "reasoning": "6.0 years experience exceeds the 4-year requirement.", "citations": []},
+                        "education": {"raw_score": 90.0, "reasoning": "Relevant software background.", "citations": []},
+                        "location": {"raw_score": 100.0, "reasoning": "Based in New York, NY (Office match).", "citations": []},
+                        "career_stability": {"raw_score": 90.0, "reasoning": "Good tenure history.", "citations": []},
+                        "industry_match": {"raw_score": 90.0, "reasoning": "Strong product development background.", "citations": []},
+                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                    }
+                )
+                db.add(s1)
+
+                s2 = Score(
+                    job_id=job_1.id,
+                    candidate_id=cand_2.id,
+                    resume_id=r2.id,
+                    overall_score=89.0,
+                    mandatory_skills_score=95.0,
+                    nice_skills_score=50.0,
+                    experience_score=92.0,
+                    education_score=85.0,
+                    industry_score=90.0,
+                    location_score=100.0,
+                    stability_score=85.0,
+                    certification_score=0.0,
+                    semantic_similarity=0.95,
+                    match_breakdown={
+                        "overall_score": 89.0,
+                        "match_summary": "Strong Cloud Architect. Demonstrates deep AWS, Docker, Kubernetes, and Terraform expertise.",
+                        "mandatory_skills": {"raw_score": 95.0, "reasoning": "AWS, Docker, Kubernetes, Terraform present.", "citations": []},
+                        "nice_to_have_skills": {"raw_score": 50.0, "reasoning": "Go present, missing GraphQL.", "citations": []},
+                        "experience": {"raw_score": 92.0, "reasoning": "7.5 years experience fits the 5-year target.", "citations": []},
+                        "education": {"raw_score": 85.0, "reasoning": "Technical background.", "citations": []},
+                        "location": {"raw_score": 100.0, "reasoning": "San Francisco base matches job posting details.", "citations": []},
+                        "career_stability": {"raw_score": 85.0, "reasoning": "Average tenure of 2.5 years per role.", "citations": []},
+                        "industry_match": {"raw_score": 90.0, "reasoning": "Infrastructure cloud architect focus.", "citations": []},
+                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                    }
+                )
+                db.add(s2)
+
+                s3 = Score(
+                    job_id=job_2.id,
+                    candidate_id=cand_3.id,
+                    resume_id=r3.id,
+                    overall_score=45.0,
+                    mandatory_skills_score=35.0,
+                    nice_skills_score=0.0,
+                    experience_score=40.0,
+                    education_score=80.0,
+                    industry_score=50.0,
+                    location_score=0.0,
+                    stability_score=90.0,
+                    certification_score=0.0,
+                    semantic_similarity=0.35,
+                    match_breakdown={
+                        "overall_score": 45.0,
+                        "match_summary": "Underqualified developer. Missing React, TypeScript, and TailwindCSS framework skills.",
+                        "mandatory_skills": {"raw_score": 35.0, "reasoning": "Only general Javascript present. Missing React and TypeScript.", "citations": []},
+                        "nice_to_have_skills": {"raw_score": 0.0, "reasoning": "", "citations": []},
+                        "experience": {"raw_score": 40.0, "reasoning": "2.0 years experience is below the 4-year requirement.", "citations": []},
+                        "education": {"raw_score": 80.0, "reasoning": "Basic degree.", "citations": []},
+                        "location": {"raw_score": 0.0, "reasoning": "Based in London (Job is in NY).", "citations": []},
+                        "career_stability": {"raw_score": 90.0, "reasoning": "Stable junior trajectory.", "citations": []},
+                        "industry_match": {"raw_score": 50.0, "reasoning": "Limited commercial experience.", "citations": []},
+                        "certifications": {"raw_score": 0.0, "reasoning": "", "citations": []}
+                    }
+                )
+                db.add(s3)
 
                 await db.commit()
                 logger.info("Successfully seeded default jobs, candidates, and evaluation scores for the live demo!")
