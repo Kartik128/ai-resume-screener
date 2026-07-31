@@ -67,7 +67,208 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         except Exception as e:
             logger.warning(f"Seeding skipped or already initialized: {e}")
 
+    # Seed default Jobs and Candidates if database is empty
+    async with AsyncSessionLocal() as db:
+        try:
+            from app.models.job import Job, JobStatus
+            from app.models.candidate import Candidate
+            from app.models.resume import Resume, ParsingStatus
+            from app.models.application import Application, ApplicationStatus
+            from app.services.scoring_engine_service import ScoringEngineService
+            from app.repositories.score_repository import ScoreRepository
+
+            # Check if any jobs exist
+            jobs_count = await db.execute(select(Job))
+            if not jobs_count.scalars().first():
+                # Get the demo company and user
+                comp_res = await db.execute(select(Company).where(Company.slug == "demo-company"))
+                company = comp_res.scalar_one()
+
+                user_res = await db.execute(select(User).where(User.email == "admin@company.com"))
+                admin_user = user_res.scalar_one()
+
+                # 1. Create Job: Senior Cloud Architect
+                job_1 = Job(
+                    company_id=company.id,
+                    creator_id=admin_user.id,
+                    title="Senior Cloud Architect",
+                    department="Engineering",
+                    raw_description="We are seeking a Senior Cloud Architect to lead our cloud infrastructure scaling efforts. Required skills include AWS, Docker, Kubernetes, and Terraform. Minimum 5 years of experience.",
+                    status=JobStatus.ACTIVE,
+                    min_experience_years=5.0,
+                    max_experience_years=15.0,
+                    location="San Francisco, CA",
+                    is_remote=True,
+                    responsibilities=["Design highly-scalable cloud architectures", "Maintain CI/CD pipelines", "Implement distributed databases"],
+                    parsed_data={
+                        "mandatory_skills": [
+                            {"name": "AWS", "weight": 40},
+                            {"name": "Docker", "weight": 20},
+                            {"name": "Kubernetes", "weight": 20},
+                            {"name": "Terraform", "weight": 20}
+                        ],
+                        "nice_to_have_skills": [
+                            {"name": "Go", "weight": 50},
+                            {"name": "GraphQL", "weight": 50}
+                        ],
+                        "experience": {"min_years": 5.0}
+                    }
+                )
+                db.add(job_1)
+
+                # 2. Create Job: Lead Frontend Engineer
+                job_2 = Job(
+                    company_id=company.id,
+                    creator_id=admin_user.id,
+                    title="Lead Frontend Engineer",
+                    department="Engineering",
+                    raw_description="Looking for a Lead Frontend Engineer with strong React, TypeScript, and TailwindCSS skills. Minimum 4 years of experience.",
+                    status=JobStatus.ACTIVE,
+                    min_experience_years=4.0,
+                    max_experience_years=12.0,
+                    location="New York, NY",
+                    is_remote=False,
+                    responsibilities=["Build premium web applications", "Optimize frontend load speeds", "Manage engineering tasks"],
+                    parsed_data={
+                        "mandatory_skills": [
+                            {"name": "React", "weight": 40},
+                            {"name": "TypeScript", "weight": 30},
+                            {"name": "TailwindCSS", "weight": 15},
+                            {"name": "Next.js", "weight": 15}
+                        ],
+                        "nice_to_have_skills": [],
+                        "experience": {"min_years": 4.0}
+                    }
+                )
+                db.add(job_2)
+                await db.flush()
+
+                # 3. Create Candidates
+                # Cand 1 for Job 2
+                cand_1 = Candidate(
+                    company_id=company.id,
+                    full_name="Sarah Jenkins",
+                    email="sarah.j@example.com",
+                    phone="+1 555-0192",
+                    location="New York, NY",
+                    total_experience_years=6.0,
+                    raw_skills=["React", "TypeScript", "TailwindCSS", "Next.js", "CSS", "HTML", "Javascript"],
+                    summary="Senior Frontend Developer specializing in React and modern CSS systems."
+                )
+                db.add(cand_1)
+
+                # Cand 2 for Job 1
+                cand_2 = Candidate(
+                    company_id=company.id,
+                    full_name="Michael Chen",
+                    email="m.chen@example.com",
+                    phone="+1 555-0188",
+                    location="San Francisco, CA",
+                    total_experience_years=7.5,
+                    raw_skills=["AWS", "Docker", "Kubernetes", "Terraform", "Go", "Python", "Linux"],
+                    summary="DevOps Engineer focused on Infrastructure as Code and cloud systems orchestration."
+                )
+                db.add(cand_2)
+
+                # Cand 3 for Job 2
+                cand_3 = Candidate(
+                    company_id=company.id,
+                    full_name="Emma Watson",
+                    email="emma.w@example.com",
+                    phone="+1 555-0123",
+                    location="London, UK",
+                    total_experience_years=2.0,
+                    raw_skills=["Python", "Javascript", "CSS", "HTML"],
+                    summary="Junior developer looking to grow tech capabilities in React/Node ecosystem."
+                )
+                db.add(cand_3)
+                await db.flush()
+
+                # 4. Create Resumes
+                r1 = Resume(
+                    candidate_id=cand_1.id,
+                    job_id=job_2.id,
+                    file_name="sarah_jenkins_resume.pdf",
+                    file_path="uploads/sarah_jenkins_resume.pdf",
+                    file_type="pdf",
+                    file_size_bytes=24500,
+                    parsing_status=ParsingStatus.PARSED,
+                    raw_text="Sarah Jenkins. 6 years React, TypeScript, Next.js, and TailwindCSS experience. Built responsive SaaS dashboards.",
+                    parsed_data={"skills": [{"name": "React"}, {"name": "TypeScript"}, {"name": "TailwindCSS"}, {"name": "Next.js"}]}
+                )
+                db.add(r1)
+
+                r2 = Resume(
+                    candidate_id=cand_2.id,
+                    job_id=job_1.id,
+                    file_name="michael_chen_resume.pdf",
+                    file_path="uploads/michael_chen_resume.pdf",
+                    file_type="pdf",
+                    file_size_bytes=31200,
+                    parsing_status=ParsingStatus.PARSED,
+                    raw_text="Michael Chen. DevOps engineer with 7.5 years experience scaling clouds on AWS, writing Terraform scripts, and containerizing with Docker/Kubernetes.",
+                    parsed_data={"skills": [{"name": "AWS"}, {"name": "Docker"}, {"name": "Kubernetes"}, {"name": "Terraform"}]}
+                )
+                db.add(r2)
+
+                r3 = Resume(
+                    candidate_id=cand_3.id,
+                    job_id=job_2.id,
+                    file_name="emma_watson_resume.pdf",
+                    file_path="uploads/emma_watson_resume.pdf",
+                    file_type="pdf",
+                    file_size_bytes=19800,
+                    parsing_status=ParsingStatus.PARSED,
+                    raw_text="Emma Watson. Junior software engineer. Experienced in basic Python scripting, HTML/CSS layout creation, and Javascript animations.",
+                    parsed_data={"skills": [{"name": "Python"}, {"name": "Javascript"}, {"name": "HTML"}, {"name": "CSS"}]}
+                )
+                db.add(r3)
+                await db.flush()
+
+                # 5. Create Applications
+                app_1 = Application(
+                    job_id=job_2.id,
+                    candidate_id=cand_1.id,
+                    recruiter_id=admin_user.id,
+                    status=ApplicationStatus.SHORTLISTED
+                )
+                db.add(app_1)
+
+                app_2 = Application(
+                    job_id=job_1.id,
+                    candidate_id=cand_2.id,
+                    recruiter_id=admin_user.id,
+                    status=ApplicationStatus.APPLIED
+                )
+                db.add(app_2)
+
+                app_3 = Application(
+                    job_id=job_2.id,
+                    candidate_id=cand_3.id,
+                    recruiter_id=admin_user.id,
+                    status=ApplicationStatus.REJECTED
+                )
+                db.add(app_3)
+                await db.flush()
+
+                # 6. Pre-calculate Scores
+                score_repo = ScoreRepository(db)
+                for j, r, c in [(job_2, r1, cand_1), (job_1, r2, cand_2), (job_2, r3, cand_3)]:
+                    breakdown = await ScoringEngineService.evaluate_candidate(j, r)
+                    await score_repo.save_or_update_score(
+                        job_id=j.id,
+                        candidate_id=c.id,
+                        resume_id=r.id,
+                        breakdown=breakdown
+                    )
+
+                await db.commit()
+                logger.info("Successfully seeded default jobs, candidates, and evaluation scores for the live demo!")
+        except Exception as e:
+            logger.error(f"Failed to seed demo data: {e}")
+
     yield
+
     logger.info(f"Shutting down {settings.PROJECT_NAME}")
 
 
