@@ -70,7 +70,52 @@ async def ask_analytics(
 
     company_id = current_user.company_id
 
-    if category == "time_to_hire":
+    # ── Job-Specific Smart Query Resolution ─────────────────────────
+    jobs_res = await db.execute(select(Job).where(Job.company_id == company_id))
+    all_jobs = jobs_res.scalars().all()
+    matched_job = None
+    for j in all_jobs:
+        keywords = re.findall(r"\w+", j.title.lower())
+        # Support common aliases/parts of titles
+        keywords.extend(["compensation", "rewards", "benefits"] if "rewards" in j.title.lower() or "compensation" in j.title.lower() else [])
+        keywords.extend(["frontend", "react", "nextjs", "next.js", "javascript"] if "frontend" in j.title.lower() else [])
+        keywords.extend(["cloud", "aws", "devops", "kubernetes", "infrastructure"] if "cloud" in j.title.lower() or "architect" in j.title.lower() else [])
+        if any(k in q_lower for k in keywords if len(k) > 3):
+            matched_job = j
+            break
+
+    if matched_job:
+        from app.models.resume import Resume
+        
+        cand_cnt = await db.scalar(
+            select(func.count(Resume.id)).where(Resume.job_id == matched_job.id)
+        ) or 0
+        
+        avg_s = await db.scalar(
+            select(func.avg(Score.overall_score))
+            .where(Score.job_id == matched_job.id)
+        ) or 0.0
+        avg_s_val = round(float(avg_s), 1) if avg_s else 0.0
+        
+        shortlisted_cnt = await db.scalar(
+            select(func.count(Application.id))
+            .where(Application.job_id == matched_job.id, Application.status == ApplicationStatus.SHORTLISTED)
+        ) or 0
+        
+        headline = f"Report for '{matched_job.title}': Found {cand_cnt} candidate resume(s)."
+        data_points = [
+            DataPoint(label="Target Job Role", value=matched_job.title),
+            DataPoint(label="Resumes Uploaded", value=cand_cnt),
+            DataPoint(label="Average AI Score", value=f"{avg_s_val}/100" if avg_s_val > 0 else "No scores yet"),
+            DataPoint(label="Shortlisted Candidates", value=shortlisted_cnt),
+        ]
+        insight = f"There are {cand_cnt} candidates evaluated for the '{matched_job.title}' role. The average candidate compatibility score is {avg_s_val}/100."
+        suggested_followups = [
+            f"Who is the top candidate for {matched_job.title}?",
+            f"Show me the skill gaps for the {matched_job.title} role.",
+            f"What is the average experience of candidates for {matched_job.title}?",
+        ]
+    elif category == "time_to_hire":
         stmt = text("""
             SELECT 
                 COUNT(a.id) AS total_apps,
