@@ -16,6 +16,9 @@ class SkillMatchDetail(BaseModel):
     match_type: MatchType = Field(..., description="Degree of match")
     similarity_score: float = Field(..., ge=0.0, le=1.0, description="Similarity score between 0.0 and 1.0")
     reasoning: str = Field(..., description="Explanation of why this matches or is missing")
+    evidence_sentence: Optional[str] = Field(None, description="Sentence context where skill was mentioned")
+    char_start: Optional[int] = Field(None, description="Starting character index in raw text")
+    char_end: Optional[int] = Field(None, description="Ending character index in raw text")
 
 
 class SemanticMatchRequest(BaseModel):

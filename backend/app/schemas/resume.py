@@ -56,6 +56,7 @@ class ResumeStructuredExtract(BaseModel):
     education: List[EducationDTO] = Field(default_factory=list)
     skills: List[SkillItemDTO] = Field(default_factory=list)
     companies: List[str] = Field(default_factory=list)
+    industry_domains: List[str] = Field(default_factory=list, description="Industries/domains the candidate has experience in")
     projects: List[ProjectDTO] = Field(default_factory=list)
     certifications: List[CertificationDTO] = Field(default_factory=list)
     achievements: List[str] = Field(default_factory=list)
@@ -75,6 +76,9 @@ class ResumeRead(BaseModel):
     parsed_data: Optional[Dict[str, Any]] = None
     parsing_status: ParsingStatus
     error_message: Optional[str] = None
+    is_duplicate: Optional[bool] = False
+    duplicate_candidate_id: Optional[uuid.UUID] = None
+    duplicate_confidence: Optional[float] = None
     created_at: datetime
     updated_at: datetime
 

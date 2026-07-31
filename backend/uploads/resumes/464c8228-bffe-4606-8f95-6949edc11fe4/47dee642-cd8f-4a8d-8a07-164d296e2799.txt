@@ -1,0 +1,52 @@
+Priya Sharma
+priya.sharma@gmail.com | +1 (415) 892-3341 | San Francisco, CA
+linkedin.com/in/priyasharmapm
+
+PROFESSIONAL SUMMARY
+Senior Product Manager with 8 years of experience in FinTech and payments, including 4 years at Stripe
+building payment processing and fraud prevention products. Proven track record of taking products 0-to-1
+and scaling to $500M+ GMV. Expert in ACH, card networks, real-time payments (RTP), and regulatory compliance.
+
+WORK EXPERIENCE
+
+Stripe — San Francisco, CA
+Senior Product Manager, Payments Platform
+2020 - Present
+- Owned the Stripe Terminal product roadmap, growing from $20M to $350M GMV in 3 years
+- Led a cross-functional team of 12 engineers, 3 designers, and compliance/legal to launch FedNow integration
+- Wrote 40+ PRDs and worked directly with Visa/Mastercard networks on acceptance rate optimization
+- Reduced merchant onboarding time from 7 days to 18 hours through automated KYC/AML workflows
+- Defined OKRs and led quarterly product reviews with CTO and VP Product
+
+PayPal — San Jose, CA
+Product Manager, Fraud & Risk Management
+2018 - 2020
+- Built ML-powered fraud detection system reducing chargebacks by 31% across $2B monthly transaction volume
+- Led PCI-DSS compliance audit for PayPal's card-not-present processing platform
+- Designed REST APIs for merchant fraud webhook integrations (70+ merchant partners)
+- Analyzed payment funnel data using SQL, Amplitude, and Tableau dashboards
+
+Capital One — McLean, VA
+Associate Product Manager
+2016 - 2018
+- Launched mobile banking payment features with 2.1M active monthly users
+- Partnered with Compliance, Legal, and Finance on Reg E dispute resolution workflow
+
+EDUCATION
+Harvard Business School — MBA, Finance & Entrepreneurship — 2016
+UC Berkeley — Bachelor of Science, Computer Science — 2014
+
+SKILLS
+Product Management, FinTech, Payments, ACH, Visa, Mastercard, Real-Time Payments (RTP), FedNow,
+REST APIs, Fraud Detection, Risk Management, PCI-DSS Compliance, AML/KYC, SQL, Tableau, Amplitude,
+Mixpanel, Agile, Scrum, PRDs, User Stories, OKRs, Stakeholder Management, Product Roadmap, BNPL,
+ISO 20022, Cross-border Payments, Data Analysis, Python (basic), A/B Testing
+
+CERTIFICATIONS
+Certified Product Manager (CPM) — Product School 2019
+PCI-DSS Implementation Certificate — 2021
+
+ACHIEVEMENTS
+- Grew Stripe Terminal to $350M GMV in 3 years from $20M launch baseline
+- Launched FedNow real-time payment integration (first 10 FinTech companies in the US)
+- Reduced merchant onboarding from 7 days to 18 hours

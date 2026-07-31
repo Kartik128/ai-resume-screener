@@ -29,12 +29,15 @@ class UserRepository:
         company_id: uuid.UUID,
         role: UserRole = UserRole.RECRUITER,
     ) -> User:
+        now = datetime.now(timezone.utc)
         user = User(
             email=email.lower(),
             hashed_password=hashed_password,
             full_name=full_name,
             company_id=company_id,
             role=role,
+            created_at=now,
+            updated_at=now,
         )
         self.db.add(user)
         await self.db.flush()
@@ -43,7 +46,9 @@ class UserRepository:
     async def update_last_login(self, user_id: uuid.UUID) -> Optional[User]:
         user = await self.get_by_id(user_id)
         if user:
-            user.last_login_at = datetime.now(timezone.utc)
+            now = datetime.now(timezone.utc)
+            user.last_login_at = now
+            user.updated_at = now
             await self.db.flush()
         return user
 

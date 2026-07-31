@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.company import Company
     from app.models.user import User
     from app.models.skill import Skill
+    from app.models.comment import JobComment
 
 
 class JobStatus(str, enum.Enum):
@@ -40,6 +41,7 @@ class Job(Base, UUIDMixin, TimestampMixin):
     education_requirement: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     is_remote: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    blind_mode: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)  # Hides PII during initial scoring
 
     # Compensation
     min_salary: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
@@ -55,6 +57,9 @@ class Job(Base, UUIDMixin, TimestampMixin):
     creator: Mapped["User"] = relationship("User", lazy="joined")
     job_skills: Mapped[List["JobSkill"]] = relationship(
         "JobSkill", back_populates="job", cascade="all, delete-orphan", lazy="selectin"
+    )
+    comments: Mapped[List["JobComment"]] = relationship(
+        "JobComment", back_populates="job", cascade="all, delete-orphan", lazy="selectin"
     )
 
 

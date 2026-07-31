@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import JobCreateModal from '../components/JobCreateModal';
 import { Briefcase, Plus, MapPin, Sparkles } from 'lucide-react';
 import api from '../services/api';
 
 export default function Jobs() {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showJobModal, setShowJobModal] = useState(false);
@@ -34,13 +36,22 @@ export default function Jobs() {
             <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Organization Postings</span>
             <h1 className="font-heading font-extrabold text-2xl text-white mt-1">Job Openings</h1>
           </div>
-          <button
-            onClick={() => setShowJobModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 text-white text-xs font-semibold flex items-center space-x-2 shadow-lg shadow-blue-500/20"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Post New Job</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/jd-preparation')}
+              className="px-4 py-2.5 rounded-xl border border-blue-500/40 bg-blue-950/20 hover:bg-blue-950/40 text-blue-300 text-xs font-semibold flex items-center space-x-2 transition-all"
+            >
+              <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
+              <span>AI JD Builder</span>
+            </button>
+            <button
+              onClick={() => setShowJobModal(true)}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 text-white text-xs font-semibold flex items-center space-x-2 shadow-lg shadow-blue-500/20"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Post New Job</span>
+            </button>
+          </div>
         </div>
 
         {loading ? (

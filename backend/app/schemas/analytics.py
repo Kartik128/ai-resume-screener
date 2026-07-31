@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from pydantic import BaseModel, Field
 
 
@@ -30,3 +30,24 @@ class HRAnalyticsDashboardResponse(BaseModel):
     top_candidate_skills: List[SkillFrequencyItem]
     top_skill_gaps: List[SkillFrequencyItem]
     hiring_trends: List[HiringTrendItem]
+    recruiter_ai_agreement_rate: float
+    candidate_experience_nps: float
+
+
+class DataPoint(BaseModel):
+    label: str
+    value: Any
+
+
+class NLAskRequest(BaseModel):
+    question: str
+
+
+class NLAnswerResponse(BaseModel):
+    question: str
+    category: str
+    headline: str
+    data_points: List[DataPoint]
+    insight: str
+    suggested_followups: List[str]
+

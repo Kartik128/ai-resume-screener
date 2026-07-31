@@ -1,0 +1,31 @@
+Emma Johnson
+emma.johnson@gmail.com | +1 (212) 445-8832 | New York, NY
+
+PROFESSIONAL SUMMARY
+Data Analyst transitioning to Data Engineering with 4 years in marketing analytics.
+Strong SQL and Python skills, learning Spark and cloud technologies.
+
+WORK EXPERIENCE
+
+Unilever — New York, NY
+Senior Data Analyst, Marketing Analytics
+2021 - Present
+- Built SQL dashboards and Tableau reports for marketing campaign performance
+- Automated Python data extraction scripts from Facebook Ads, Google Analytics APIs
+- Collaborated with Data Engineering team to improve data pipeline reliability
+
+Publicis Groupe — New York, NY
+Data Analyst
+2019 - 2021
+- Analyzed digital ad performance data using SQL and Excel
+- Created Tableau dashboards for client reporting
+
+EDUCATION
+New York University — Bachelor of Science, Business Analytics — 2019
+
+SKILLS
+SQL, Python (Pandas, basic), Tableau, Excel, Google Analytics, Facebook Ads API,
+Data Analysis, Marketing Analytics, Salesforce, Looker (basic), AWS S3 (learning)
+
+CERTIFICATIONS
+Google Data Analytics Professional Certificate — 2022

@@ -98,3 +98,38 @@ async def export_candidate_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@router.get(
+    "/compare",
+    status_code=status.HTTP_200_OK,
+    summary="Export candidate comparison matrix report to PDF",
+)
+async def export_comparison_pdf(
+    job_id: uuid.UUID,
+    candidate_ids: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.services.comparison_service import ComparisonService
+
+    job_repo = JobRepository(db)
+    job = await job_repo.get_by_id(job_id, current_user.company_id)
+    if not job:
+        raise NotFoundException(resource="Job Posting", identifier=job_id)
+
+    parsed_ids = [uuid.UUID(cid.strip()) for cid in candidate_ids.split(",") if cid.strip()]
+    comparison_res = await ComparisonService.compare_candidates(
+        job_id=job_id,
+        candidate_ids=parsed_ids,
+        company_id=current_user.company_id,
+        db=db,
+    )
+
+    pdf_bytes = ReportGeneratorService.generate_comparison_pdf(job, comparison_res.columns)
+    filename = f"comparison_{job.title.replace(' ', '_').lower()}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )

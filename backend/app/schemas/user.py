@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from app.models.user import UserRole
 from app.schemas.company import CompanyRead
@@ -34,3 +34,33 @@ class UserRead(UserBase):
     updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+def user_to_read_schema(user: Any) -> UserRead:
+    company_schema = None
+    try:
+        if hasattr(user, "company") and user.company:
+            c = user.company
+            company_schema = CompanyRead(
+                id=c.id,
+                name=c.name,
+                slug=c.slug,
+                domain=getattr(c, "domain", None),
+                subscription_plan=getattr(c, "subscription_plan", SubscriptionPlan.STARTER),
+                is_active=getattr(c, "is_active", True),
+            )
+    except Exception:
+        company_schema = None
+
+    return UserRead(
+        id=user.id,
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role,
+        is_active=user.is_active,
+        company_id=user.company_id,
+        company=company_schema,
+        last_login_at=getattr(user, "last_login_at", None),
+        created_at=getattr(user, "created_at", None),
+        updated_at=getattr(user, "updated_at", None),
+    )

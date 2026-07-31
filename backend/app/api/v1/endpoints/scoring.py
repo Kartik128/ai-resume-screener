@@ -42,6 +42,19 @@ async def evaluate_candidate(
         raise NotFoundException(resource="Candidate / Resume", identifier=candidate_id)
 
     resume = candidate.resumes[0]
+
+    # Timestamp-based caching check (CTO Directive #10 Cost Optimization)
+    score_ent = await score_repo.get_by_job_and_candidate(job.id, candidate.id)
+    if score_ent and score_ent.match_breakdown:
+        score_updated = score_ent.updated_at
+        job_updated = job.updated_at
+        resume_updated = resume.updated_at
+
+        if score_updated >= job_updated and score_updated >= resume_updated:
+            from loguru import logger
+            logger.info(f"Cache Hit for candidate {candidate.id} on job {job.id} - skipping LLM runs.")
+            return ScoreBreakdownResponse(**score_ent.match_breakdown)
+
     breakdown = await ScoringEngineService.evaluate_candidate(job, resume)
     await score_repo.save_or_update_score(
         job_id=job.id,

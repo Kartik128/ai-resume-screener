@@ -1,0 +1,32 @@
+Sarah Chen
+sarah.chen@gmail.com | +1 (503) 778-2211 | Portland, OR
+
+PROFESSIONAL SUMMARY
+Product Manager with 5 years in healthcare SaaS and clinical workflow products.
+Experience with HIPAA compliance, EHR integrations, and clinical user research.
+
+WORK EXPERIENCE
+
+Epic Systems — Verona, WI
+Product Manager, Clinical Workflows
+2021 - Present
+- Managed Epic EHR physician workflow optimization products
+- Led integration projects with FHIR APIs and HL7 v2 clinical data feeds
+- Wrote PRDs and worked with clinical informatics teams
+
+Cerner — Kansas City, MO
+Business Analyst, Clinical Analytics
+2019 - 2021
+- Developed clinical data analysis dashboards using SQL and Tableau
+- Worked with hospital compliance teams on HIPAA audit reporting
+
+EDUCATION
+Johns Hopkins University — Master of Public Health — 2019
+University of Oregon — Bachelor of Science, Biology — 2017
+
+SKILLS
+Product Management, Healthcare SaaS, HIPAA, EHR, FHIR APIs, HL7, SQL, Tableau,
+Clinical Workflows, Agile, PRDs, Stakeholder Management, Compliance
+
+ACHIEVEMENTS
+- Led Epic EHR integration for 3 major hospital networks

@@ -8,11 +8,16 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
+connect_args = {}
+if "sqlite" in settings.DATABASE_URL:
+    connect_args = {"check_same_thread": False, "timeout": 30}
+
 # Async Engine for FastAPI Runtime
 async_engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
     future=True,
+    connect_args=connect_args,
 )
 
 AsyncSessionLocal = async_sessionmaker(

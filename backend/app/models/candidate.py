@@ -27,6 +27,7 @@ class Candidate(Base, UUIDMixin, TimestampMixin):
     total_experience_years: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     raw_skills: Mapped[Optional[List[str]]] = mapped_column(JSON, default=list, nullable=True)
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_internal: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     # Relationships
     company: Mapped["Company"] = relationship("Company")

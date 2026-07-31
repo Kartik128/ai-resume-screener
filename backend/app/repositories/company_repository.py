@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Optional, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,11 +19,14 @@ class CompanyRepository:
         return result.scalar_one_or_none()
 
     async def create(self, name: str, slug: str, domain: Optional[str] = None, plan: SubscriptionPlan = SubscriptionPlan.STARTER) -> Company:
+        now = datetime.now(timezone.utc)
         company = Company(
             name=name,
             slug=slug,
             domain=domain,
             subscription_plan=plan,
+            created_at=now,
+            updated_at=now,
         )
         self.db.add(company)
         await self.db.flush()

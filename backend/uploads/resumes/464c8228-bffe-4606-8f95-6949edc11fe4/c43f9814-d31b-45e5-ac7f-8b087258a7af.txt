@@ -1,0 +1,45 @@
+Marcus Williams
+marcus.williams@email.com | +1 (312) 445-7890 | Chicago, IL
+linkedin.com/in/marcuswilliamspm
+
+SUMMARY
+Product Manager with 7 years of experience leading SaaS and marketplace products. Strong in Agile delivery,
+data-driven decision making, and cross-functional leadership. Recently pivoted to FinTech with 2 years at
+a B2B payments startup. MBA from Booth School of Business.
+
+WORK EXPERIENCE
+
+PayNexus (B2B Payments Startup) — Chicago, IL
+Product Manager
+2022 - Present
+- Led B2B invoice payment product from MVP to $85M GMV in 18 months
+- Worked with engineering on REST API design for ERP (QuickBooks, SAP) integrations
+- Collaborated with Compliance team on AML transaction monitoring workflows
+- Analyzed funnel metrics using SQL and Mixpanel to improve ACH payment conversion by 22%
+
+Salesforce — San Francisco, CA
+Senior Product Manager, Salesforce Billing
+2019 - 2022
+- Owned billing and subscription management platform with 8,000+ enterprise customers
+- Led cross-functional Agile team of 9 engineers and 2 UX designers
+- Wrote detailed PRDs and managed quarterly roadmap planning and OKR setting
+- Partnered with Finance, Legal, and Sales to launch EU billing compliance (GDPR)
+
+McKinsey Digital — Chicago, IL
+Associate Product Manager / Digital Consultant
+2017 - 2019
+- Delivered digital transformation projects for financial services and retail clients
+- Conducted data analysis using SQL and Excel to identify revenue optimization opportunities
+
+EDUCATION
+University of Chicago Booth School of Business — MBA — 2017
+University of Michigan — Bachelor of Arts, Economics — 2015
+
+SKILLS
+Product Management, SaaS, B2B Payments, ACH, REST APIs, AML Compliance, SQL, Mixpanel, Amplitude,
+Agile, Scrum, PRDs, OKRs, Stakeholder Management, Roadmap Planning, Tableau, QuickBooks Integration,
+Customer Discovery, Market Research, A/B Testing, Jira, Confluence
+
+ACHIEVEMENTS
+- Launched B2B invoice payment product reaching $85M GMV in 18 months
+- Improved ACH payment conversion by 22% using funnel analysis

@@ -6,6 +6,10 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Analytics from './pages/Analytics';
+import CandidatePortal from './pages/CandidatePortal';
+import WorkforcePlanning from './pages/WorkforcePlanning';
+import Settings from './pages/Settings';
+import JdPreparation from './pages/JdPreparation';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -21,6 +25,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/portal/:assessmentId/:candidateId" element={<CandidatePortal />} />
           <Route
             path="/dashboard"
             element={
@@ -42,6 +47,30 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/workforce"
+            element={
+              <ProtectedRoute>
+                <WorkforcePlanning />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jd-preparation"
+            element={
+              <ProtectedRoute>
+                <JdPreparation />
               </ProtectedRoute>
             }
           />

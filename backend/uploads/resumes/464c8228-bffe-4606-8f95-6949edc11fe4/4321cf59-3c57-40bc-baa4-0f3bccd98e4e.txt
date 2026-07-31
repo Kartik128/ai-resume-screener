@@ -1,0 +1,58 @@
+Rahul Krishnamurthy
+rahul.k@gmail.com | +1 (512) 334-7823 | Austin, TX
+linkedin.com/in/rahulk | github.com/rahulk-data
+
+PROFESSIONAL SUMMARY
+Principal Data Engineer with 10 years of experience building large-scale healthcare data platforms.
+Deep expertise in HIPAA-compliant data engineering, Apache Spark, FHIR R4, AWS cloud, and leading
+high-performing data engineering teams in clinical and life sciences organizations.
+
+WORK EXPERIENCE
+
+Optum (UnitedHealth Group) — Austin, TX
+Principal Data Engineer, Clinical Data Platform
+2019 - Present
+- Architected HIPAA-compliant data lake on AWS (S3, Glue, Redshift, EMR) processing 120TB/day clinical data
+- Built PySpark pipelines transforming HL7 v2, FHIR R4, ICD-10, CPT codes, and LOINC data at petabyte scale
+- Designed Apache Airflow orchestration for 200+ clinical ETL pipelines with SLA monitoring
+- Led migration from Oracle to AWS cloud data lake reducing query costs by 68%
+- Implemented Delta Lake architecture for ACID transactions on healthcare data
+- Mentored and managed team of 5 data engineers through code reviews and architecture design sessions
+- Built real-time Kafka streaming pipeline for patient deterioration early-warning signals
+- Ensured PHI data security with encryption at rest/transit, audit logging, and data masking per HIPAA
+- Used dbt for 300+ data transformations with full lineage documentation
+
+Epic Systems — Madison, WI
+Senior Data Engineer, Data Infrastructure
+2016 - 2019
+- Built FHIR R4 data ingestion pipelines for Epic Clarity and Caboodle data models
+- Developed Python ETL frameworks for clinical data feeds from 150+ hospital Epic instances
+- Implemented Apache Kafka streaming for real-time ADT (admit/discharge/transfer) event processing
+- Designed PostgreSQL schemas for clinical analytics data warehouse
+
+Deloitte Analytics — Chicago, IL
+Data Engineer
+2014 - 2016
+- Built Big Data pipelines using Apache Spark on Hadoop for financial services clients
+- Developed Python ETL automation scripts and SQL stored procedures
+
+EDUCATION
+University of Texas at Austin — Master of Science, Computer Science — 2014
+Indian Institute of Technology (IIT Bombay) — Bachelor of Technology, Computer Science — 2012
+
+SKILLS
+Python, PySpark, Apache Spark, Apache Airflow, Apache Kafka, SQL, PostgreSQL, AWS (S3, Glue,
+Redshift, EMR, Kinesis), FHIR R4, HL7 v2, ICD-10, CPT codes, LOINC, HIPAA Compliance, PHI Security,
+Data Lake Architecture, Delta Lake, Apache Iceberg, dbt, Docker, Kubernetes, MLflow, Snowflake,
+Data Quality, SLA Monitoring, ETL, Data Modeling, Healthcare Data, Clinical Informatics, BigQuery,
+Team Leadership, Technical Mentorship, Code Review, Architecture Design, Epic EHR, Cerner
+
+CERTIFICATIONS
+AWS Certified Data Analytics Specialty — 2021
+AWS Certified Solutions Architect — Professional — 2020
+HIPAA Privacy and Security Certified — 2019
+
+ACHIEVEMENTS
+- Built HIPAA data lake processing 120TB/day reducing query costs by 68% vs Oracle legacy
+- Led team of 5 engineers delivering patient early-warning streaming system now used by 80 hospitals
+- Migrated 8-year clinical historical dataset (2PB) from Oracle to AWS with zero data loss

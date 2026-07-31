@@ -1,0 +1,42 @@
+Aisha Patel
+aisha.patel@outlook.com | +1 (617) 223-9988 | Boston, MA
+linkedin.com/in/aishapatelpm
+
+PROFESSIONAL SUMMARY
+Product Manager with 6 years in enterprise SaaS and platform products. Strong technical background
+(engineering degree), excellent at writing PRDs, working with distributed engineering teams, and
+using data to drive product decisions. Looking to deepen FinTech expertise.
+
+WORK EXPERIENCE
+
+HubSpot — Cambridge, MA
+Product Manager, Platform & Integrations
+2021 - Present
+- Owned the HubSpot App Marketplace platform product (5,000+ integrations)
+- Designed REST API standards and developer experience documentation
+- Led Agile sprints with 8 engineers; wrote 50+ PRDs and user stories
+- Used Amplitude, SQL, and Tableau to track activation metrics and DAU/MAU
+
+Wayfair — Boston, MA
+Associate Product Manager, Checkout & Payments
+2019 - 2021
+- Co-owned Wayfair checkout flow with $3B annual GMV processed through Visa/Mastercard networks
+- Worked with Risk team on fraud detection rules for card-not-present transactions
+- Collaborated with Legal and Compliance on PCI scope reduction initiatives
+- Analyzed payment failure rates with SQL and partnered with engineering to improve by 18%
+
+Accenture — Boston, MA
+Business Analyst
+2018 - 2019
+- Delivered process improvement projects for banking and insurance clients
+
+EDUCATION
+MIT — Bachelor of Science, Electrical Engineering and Computer Science — 2018
+
+SKILLS
+Product Management, SaaS Platform, REST APIs, Payments, Visa, Mastercard, Fraud Detection,
+PCI-DSS, SQL, Amplitude, Tableau, Agile, Scrum, PRDs, Roadmap, OKRs, Jira, Confluence,
+Stakeholder Management, A/B Testing, Developer Experience, API Design, Customer Research
+
+CERTIFICATIONS
+AWS Certified Cloud Practitioner — 2022

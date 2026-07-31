@@ -21,6 +21,13 @@ class CandidateCardResponse(BaseModel):
     overall_score: float
     score_breakdown: Optional[ScoreBreakdownResponse] = None
     summary_text: Optional[str] = None
+    score_id: Optional[uuid.UUID] = None
+    calibration_flags: Optional[List[str]] = Field(default_factory=list, description="Calibration warnings: 'TIE', 'LOW_EVIDENCE', 'OUTLIER'")
+    rank_percentile: Optional[float] = Field(None, description="Percentile rank compared to other candidates for this job")
+    duplicate_detected: Optional[bool] = False
+    original_candidate_id: Optional[uuid.UUID] = None
+    assessment_score: Optional[float] = None
+    is_internal: Optional[bool] = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -46,6 +53,8 @@ class CandidateComparisonColumn(BaseModel):
     mandatory_skills_present: List[str]
     missing_skills: List[str]
     risk_score: float
+    confidence_score: float = 85.0
+    risks: List[str] = []
 
 
 class ComparisonResponse(BaseModel):

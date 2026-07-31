@@ -1,0 +1,32 @@
+Alex Rivera
+alex.rivera@gmail.com | +1 (415) 228-4499 | San Francisco, CA
+
+SUMMARY
+Data Engineer with 6 years building data pipelines and analytics infrastructure.
+Strong Python and SQL skills. Experience with Spark, Airflow, and cloud platforms.
+
+WORK EXPERIENCE
+
+Lyft — San Francisco, CA
+Data Engineer, Rides Analytics
+2020 - Present
+- Built PySpark data pipelines processing 15TB/day rideshare transaction data on AWS
+- Maintained Apache Airflow pipeline orchestration for 80+ data workflows
+- Developed dbt models for BI reporting with Looker
+- Collaborated with ML engineers on feature pipelines for driver churn prediction
+
+Twitter / X — San Francisco, CA
+Data Engineer
+2018 - 2020
+- Developed Apache Kafka streaming pipelines for real-time ad impression data
+- Built Python ETL scripts for social media analytics data warehouse (PostgreSQL)
+
+EDUCATION
+University of California, Davis — Bachelor of Science, Statistics — 2018
+
+SKILLS
+Python, PySpark, Apache Airflow, Apache Kafka, SQL, PostgreSQL, AWS (S3, EMR, Redshift),
+dbt, Looker, Data Modeling, ETL, Data Quality, Machine Learning Pipelines, Spark
+
+ACHIEVEMENTS
+- Built ride data pipeline processing 15TB/day with 99.9% uptime SLA

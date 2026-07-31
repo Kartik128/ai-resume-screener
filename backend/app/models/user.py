@@ -36,6 +36,14 @@ class User(Base, UUIDMixin, TimestampMixin):
     last_login_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    google_access_token: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+    google_refresh_token: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+    google_token_expiry: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    mail_provider: Mapped[str] = mapped_column(String(50), default="smtp", nullable=False)
+    microsoft_access_token: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
+    microsoft_refresh_token: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
+    microsoft_token_expiry: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Relationships
     company: Mapped["Company"] = relationship("Company", back_populates="users", lazy="joined")

@@ -1,6 +1,11 @@
+import mimetypes
+import os
 import uuid
+from pathlib import Path
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
@@ -51,14 +56,25 @@ async def upload_resume(
         s_ent = await skill_repo.get_or_create(name=sk.name, category=sk.category)
         skill_entities.append(s_ent)
 
-    # 5. Create or Update Candidate
+    # 5. Check Duplicate Candidates
+    from app.services.duplicate_detector_service import DuplicateDetectorService
+    is_dup, canonical_id, confidence = await DuplicateDetectorService.check_duplicate(
+        company_id=current_user.company_id,
+        email=parsed_dto.email,
+        phone=parsed_dto.phone,
+        name=parsed_dto.name,
+        location=parsed_dto.location,
+        db=db,
+    )
+
+    # 6. Create or Update Candidate
     candidate = await candidate_repo.create_or_update_from_parsed_dto(
         company_id=current_user.company_id,
         parsed=parsed_dto,
         skills_map=skill_entities,
     )
 
-    # 6. Save Resume Record
+    # 7. Save Resume Record
     file_bytes = await file.read()
     resume = await resume_repo.create(
         candidate_id=candidate.id,
@@ -71,7 +87,20 @@ async def upload_resume(
         parsed_dto=parsed_dto,
     )
 
-    return ResumeRead.model_validate(resume)
+    # Save link if duplicate is found and it is not matching itself
+    if is_dup and canonical_id != candidate.id:
+        await DuplicateDetectorService.save_duplicate_link(
+            canonical_id=canonical_id,
+            duplicate_id=candidate.id,
+            confidence=confidence,
+            db=db,
+        )
+
+    out = ResumeRead.model_validate(resume)
+    out.is_duplicate = is_dup if (is_dup and canonical_id != candidate.id) else False
+    out.duplicate_candidate_id = canonical_id if (is_dup and canonical_id != candidate.id) else None
+    out.duplicate_confidence = confidence if (is_dup and canonical_id != candidate.id) else None
+    return out
 
 
 @router.post(
@@ -104,6 +133,17 @@ async def bulk_upload_resumes(
                 s_ent = await skill_repo.get_or_create(name=sk.name, category=sk.category)
                 skill_entities.append(s_ent)
 
+            # Check duplicates
+            from app.services.duplicate_detector_service import DuplicateDetectorService
+            is_dup, canonical_id, confidence = await DuplicateDetectorService.check_duplicate(
+                company_id=current_user.company_id,
+                email=parsed_dto.email,
+                phone=parsed_dto.phone,
+                name=parsed_dto.name,
+                location=parsed_dto.location,
+                db=db,
+            )
+
             candidate = await candidate_repo.create_or_update_from_parsed_dto(
                 company_id=current_user.company_id,
                 parsed=parsed_dto,
@@ -122,7 +162,20 @@ async def bulk_upload_resumes(
                 parsed_dto=parsed_dto,
             )
 
-            successful_resumes.append(ResumeRead.model_validate(resume))
+            if is_dup and canonical_id != candidate.id:
+                await DuplicateDetectorService.save_duplicate_link(
+                    canonical_id=canonical_id,
+                    duplicate_id=candidate.id,
+                    confidence=confidence,
+                    db=db,
+                )
+
+            res_dto = ResumeRead.model_validate(resume)
+            res_dto.is_duplicate = is_dup if (is_dup and canonical_id != candidate.id) else False
+            res_dto.duplicate_candidate_id = canonical_id if (is_dup and canonical_id != candidate.id) else None
+            res_dto.duplicate_confidence = confidence if (is_dup and canonical_id != candidate.id) else None
+
+            successful_resumes.append(res_dto)
         except Exception as e:
             logger.error(f"Failed bulk resume upload for file '{file.filename}': {str(e)}")
             failed_count += 1
@@ -167,3 +220,147 @@ async def list_resumes_for_job(
     resume_repo = ResumeRepository(db)
     resumes = await resume_repo.list_by_job(job_id)
     return [ResumeRead.model_validate(r) for r in resumes]
+
+
+@router.get(
+    "/{resume_id}/file",
+    status_code=status.HTTP_200_OK,
+    summary="Download or view the original uploaded resume file (PDF, DOCX, TXT)",
+)
+async def download_resume_file(
+    resume_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Stream the original uploaded resume file back to the client.
+    Supports PDF, DOCX, and TXT. The file is served inline for PDF
+    (so browsers can display it) and as attachment for other formats.
+    """
+    resume_repo = ResumeRepository(db)
+    resume = await resume_repo.get_by_id(resume_id)
+    if not resume:
+        raise NotFoundException(resource="Resume", identifier=resume_id)
+
+    file_path = Path(resume.file_path) if resume.file_path else None
+
+    # If the physical file exists on disk, serve it directly
+    if file_path and file_path.exists():
+        media_type = resume.file_type or mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
+        filename = resume.file_name or file_path.name
+
+        # PDFs and text → inline (browser-viewable); everything else → attachment download
+        disposition = "inline" if media_type in ("application/pdf", "text/plain") else "attachment"
+
+        return FileResponse(
+            path=str(file_path),
+            media_type=media_type,
+            filename=filename,
+            headers={"Content-Disposition": f'{disposition}; filename="{filename}"'},
+        )
+
+    # Fallback: file was not stored on disk (e.g. in-memory upload for tests)
+    # Serve the raw extracted text as a downloadable .txt file
+    raw_text = resume.raw_text or "(No resume text available)"
+    filename = (resume.file_name or "resume").replace(".pdf", "").replace(".docx", "") + ".txt"
+
+    from fastapi.responses import Response
+    return Response(
+        content=raw_text.encode("utf-8"),
+        media_type="text/plain",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Length": str(len(raw_text.encode("utf-8"))),
+        },
+    )
+
+
+@router.get(
+    "/{resume_id}/preview",
+    status_code=status.HTTP_200_OK,
+    summary="Get resume structured preview data for in-app viewer (text + parsed info)",
+)
+async def get_resume_preview(
+    resume_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Returns the resume's raw text and parsed structured data for rendering
+    a rich in-browser preview without needing to download the file.
+    """
+    resume_repo = ResumeRepository(db)
+    resume = await resume_repo.get_by_id(resume_id)
+    if not resume:
+        raise NotFoundException(resource="Resume", identifier=resume_id)
+
+    parsed = resume.parsed_data or {}
+    file_path = Path(resume.file_path) if resume.file_path else None
+    file_exists = file_path and file_path.exists()
+
+    return JSONResponse({
+        "resume_id": str(resume.id),
+        "file_name": resume.file_name,
+        "file_type": resume.file_type,
+        "file_size_bytes": resume.file_size_bytes,
+        "file_available": bool(file_exists),
+        "candidate_name": parsed.get("name", ""),
+        "email": parsed.get("email", ""),
+        "phone": parsed.get("phone", ""),
+        "location": parsed.get("location", ""),
+        "linkedin_url": parsed.get("linkedin_url", ""),
+        "github_url": parsed.get("github_url", ""),
+        "total_experience_years": parsed.get("total_experience_years", 0),
+        "summary": parsed.get("summary", ""),
+        "skills": [s.get("name", s) if isinstance(s, dict) else s for s in parsed.get("skills", [])],
+        "certifications": [c.get("name", c) if isinstance(c, dict) else c for c in parsed.get("certifications", [])],
+        "achievements": parsed.get("achievements", []),
+        "work_experience": parsed.get("work_experience", []),
+        "education": parsed.get("education", []),
+        "raw_text": resume.raw_text or "",
+        "download_url": f"/api/v1/resumes/{resume_id}/file",
+    })
+
+
+@router.delete(
+    "/candidate/{candidate_id}",
+    status_code=status.HTTP_200_OK,
+    summary="GDPR Right to Deletion: permanently wipe all candidate records, parse text, scores, and files",
+)
+async def delete_candidate_gdpr(
+    candidate_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    from app.models.candidate import Candidate
+    from app.models.resume import Resume
+    from app.models.application import Application
+    from app.models.score import Score
+    from sqlalchemy import delete
+
+    # Verify candidate tenant ownership
+    check_cand = await db.execute(
+        select(Candidate).where(Candidate.id == candidate_id, Candidate.company_id == current_user.company_id)
+    )
+    candidate = check_cand.scalar_one_or_none()
+    if not candidate:
+        raise NotFoundException(resource="Candidate", identifier=candidate_id)
+
+    # 1. Fetch file paths to wipe from local storage/disk
+    res_res = await db.execute(select(Resume).where(Resume.candidate_id == candidate_id))
+    resumes = res_res.scalars().all()
+    for r in resumes:
+        if r.file_path and os.path.exists(r.file_path):
+            try:
+                os.remove(r.file_path)
+            except Exception as e:
+                logger.error(f"Failed to delete resume file path: {r.file_path}. Error: {e}")
+
+    # 2. Cascade delete database entities
+    await db.execute(delete(Score).where(Score.resume_id.in_([r.id for r in resumes])))
+    await db.execute(delete(Application).where(Application.candidate_id == candidate_id))
+    await db.execute(delete(Resume).where(Resume.candidate_id == candidate_id))
+    await db.execute(delete(Candidate).where(Candidate.id == candidate_id))
+    
+    await db.commit()
+    return {"success": True, "detail": "Candidate wiped successfully for GDPR compliance."}

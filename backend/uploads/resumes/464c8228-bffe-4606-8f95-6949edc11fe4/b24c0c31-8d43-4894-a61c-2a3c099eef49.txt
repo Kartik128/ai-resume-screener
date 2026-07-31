@@ -1,0 +1,46 @@
+David Okonkwo
+david.okonkwo@email.com | +1 (469) 334-9087 | Dallas, TX
+linkedin.com/in/davidokonkwo
+
+PROFESSIONAL SUMMARY
+Data Engineer with 7 years of experience in healthcare and clinical data systems.
+Strong in FHIR, HL7 v2, HIPAA compliance, and clinical data modeling. Building cloud
+migration skills with recent AWS training and Airflow experience.
+
+WORK EXPERIENCE
+
+Children's Medical Center Dallas — Dallas, TX
+Senior Data Engineer, Clinical Analytics
+2020 - Present
+- Built Python ETL pipelines for FHIR R4 and HL7 v2 clinical data feeds from Epic EHR
+- Developed SQL data models for ICD-10, CPT code, and LOINC lab result analytics
+- Implemented HIPAA-compliant data masking and PHI audit logging using PostgreSQL
+- Built Apache Airflow pipelines for nightly clinical data warehouse refresh
+- Collaborated with clinical informatics scientists on patient risk stratification models
+- Designed FHIR Bulk Export APIs for population health analytics platform
+
+Cerner Corporation — Kansas City, MO
+Data Engineer, Health Data Exchange
+2017 - 2020
+- Developed HL7 v2 ADT message parsing and routing infrastructure in Python
+- Built SQL Server data warehouse for clinical quality metrics (HEDIS, CMS)
+- Implemented CDC (Change Data Capture) pipelines from Cerner Millennium database
+
+Cognizant — Dallas, TX
+Software Developer
+2016 - 2017
+- Developed Java backend services for insurance claims processing platform
+
+EDUCATION
+University of Texas at Dallas — Master of Science, Information Systems — 2016
+University of Lagos — Bachelor of Science, Computer Science — 2014
+
+SKILLS
+Python, SQL, PostgreSQL, FHIR R4, HL7 v2, ICD-10, CPT, LOINC, HIPAA Compliance, PHI Data Security,
+Apache Airflow, Epic EHR, Cerner, ETL, Data Modeling, Clinical Data Warehouse, Data Quality,
+AWS (S3, Glue — learning), Apache Kafka (basic), PySpark (learning), dbt, Power BI
+
+CERTIFICATIONS
+HIPAA Privacy and Security Certified — 2020
+AWS Certified Cloud Practitioner — 2023
+HL7 FHIR Certified Developer — 2021

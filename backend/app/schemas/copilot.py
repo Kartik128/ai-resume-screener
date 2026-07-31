@@ -53,3 +53,14 @@ class RedFlagAnalysisResponse(BaseModel):
     risk_score: float = Field(..., ge=0.0, le=100.0)
     has_critical_flags: bool
     red_flags: List[RedFlagItem]
+
+
+class CopilotChatRequest(BaseModel):
+    job_id: str
+    candidate_id: Optional[str] = None
+    question: str
+
+
+class CopilotChatResponse(BaseModel):
+    answer: str
+    suggested_followups: List[str]

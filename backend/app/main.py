@@ -29,12 +29,19 @@ from app.models.user import User, UserRole
 from app.core.security import get_password_hash
 
 
+from sqlalchemy import select, text
+
+# ...
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Lifespan events for application startup and shutdown."""
     setup_logging()
     logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION} [{settings.ENVIRONMENT}]")
     async with engine.begin() as conn:
+        if "sqlite" in settings.DATABASE_URL:
+            await conn.execute(text("PRAGMA journal_mode=WAL;"))
+            await conn.execute(text("PRAGMA busy_timeout=30000;"))
         await conn.run_sync(Base.metadata.create_all)
 
     # Seed Default Admin Credentials (admin@company.com / admin)
@@ -142,5 +149,5 @@ else:
             "message": f"Welcome to {settings.PROJECT_NAME} API",
             "version": settings.VERSION,
             "docs": "/docs",
-        }    "health": f"{settings.API_V1_STR}/health",
+            "health": f"{settings.API_V1_STR}/health",
         }

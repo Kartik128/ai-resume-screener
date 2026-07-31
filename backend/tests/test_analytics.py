@@ -65,3 +65,22 @@ async def test_analytics_and_export_reports(async_client: AsyncClient):
     pdf_resp = await async_client.get(f"/api/v1/exports/candidate/{cand_id}/job/{job_id}/pdf", headers=headers)
     assert pdf_resp.status_code == 200
     assert len(pdf_resp.content) > 0
+
+    # 7. Test NL Analytics Ask Endpoint
+    ask_queries = [
+        ("What is our average time to hire?", "time_to_hire"),
+        ("Show me the hiring funnel conversion rates", "funnel"),
+        ("What candidate skill gaps exist?", "skills"),
+        ("What is the average AI match score?", "scoring"),
+        ("Tell me about overall hiring performance", "overview"),
+    ]
+    for q, expected_cat in ask_queries:
+        ask_resp = await async_client.post("/api/v1/analytics/ask", headers=headers, json={"question": q})
+        assert ask_resp.status_code == 200
+        ans = ask_resp.json()
+        assert ans["category"] == expected_cat
+        assert ans["question"] == q
+        assert "headline" in ans
+        assert isinstance(ans["data_points"], list)
+        assert len(ans["suggested_followups"]) == 3
+

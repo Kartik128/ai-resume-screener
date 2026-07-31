@@ -55,6 +55,14 @@ class ComparisonService:
             present = [s for s in mandatory_req_skills if s.lower() in cand_skills]
             missing = [s for s in mandatory_req_skills if s.lower() not in cand_skills]
 
+            breakdown_dict = score_ent.match_breakdown or {}
+            conf_val = breakdown_dict.get("confidence_score")
+            risks_val = breakdown_dict.get("risks")
+            if conf_val is None or risks_val is None:
+                fresh_breakdown = await ScoringEngineService.evaluate_candidate(job, resume)
+                conf_val = fresh_breakdown.confidence_score
+                risks_val = fresh_breakdown.risks
+
             columns.append(
                 CandidateComparisonColumn(
                     candidate_id=candidate.id,
@@ -67,6 +75,8 @@ class ComparisonService:
                     mandatory_skills_present=present,
                     missing_skills=missing,
                     risk_score=red_flag_res.risk_score,
+                    confidence_score=conf_val,
+                    risks=risks_val,
                 )
             )
 

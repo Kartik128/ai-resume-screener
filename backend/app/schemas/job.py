@@ -48,6 +48,7 @@ class JobCreateSave(BaseModel):
     education_requirement: Optional[str] = None
     location: Optional[str] = None
     is_remote: bool = False
+    blind_mode: bool = False  # Enable bias-reduction: hide candidate PII during initial scoring
     min_salary: Optional[float] = None
     max_salary: Optional[float] = None
     salary_currency: Optional[str] = "USD"
@@ -69,6 +70,7 @@ class JobRead(BaseModel):
     education_requirement: Optional[str] = None
     location: Optional[str] = None
     is_remote: bool
+    blind_mode: bool = False
     min_salary: Optional[float] = None
     max_salary: Optional[float] = None
     salary_currency: Optional[str] = None

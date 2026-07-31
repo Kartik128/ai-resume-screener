@@ -1,0 +1,45 @@
+Mei Lin
+mei.lin@techmail.com | +1 (206) 887-4412 | Seattle, WA
+linkedin.com/in/meilin-de | github.com/meilindata
+
+PROFESSIONAL SUMMARY
+Senior Data Engineer with 8 years of experience in large-scale data platforms across e-commerce
+and financial services. Expert in Python, PySpark, AWS, Apache Airflow, Kafka, and dbt.
+Currently transitioning toward healthcare data — pursuing HIPAA training.
+
+WORK EXPERIENCE
+
+Amazon (AWS Marketplace) — Seattle, WA
+Senior Data Engineer, Commerce Analytics
+2020 - Present
+- Built PySpark data pipelines processing 80TB/day seller transaction data on AWS EMR
+- Architected Redshift data warehouse with dbt transformations for 500+ business metrics
+- Implemented Apache Airflow DAGs orchestrating 150+ pipelines with monitoring and alerting
+- Built real-time Kafka streaming for seller fraud event detection
+- Led migration to Delta Lake on S3 for ACID compliance on analytics datasets
+- Mentored 3 junior data engineers in code quality and architecture best practices
+
+JPMorgan Chase — New York, NY
+Data Engineer, Risk Analytics Platform
+2017 - 2020
+- Built Python ETL pipelines ingesting trading and risk data from 40+ upstream systems
+- Developed PostgreSQL schemas and SQL analytics queries for regulatory reporting
+- Implemented AWS Glue and S3 data lake for trade surveillance data
+
+Infosys — Hyderabad, India
+Software Engineer, Data
+2016 - 2017
+- Developed Hadoop MapReduce jobs and Hive queries for banking clients
+
+EDUCATION
+University of Washington — Master of Science, Data Science — 2016
+Tsinghua University — Bachelor of Engineering, Software Engineering — 2014
+
+SKILLS
+Python, PySpark, Apache Spark, Apache Airflow, Apache Kafka, SQL, PostgreSQL, AWS (S3, EMR,
+Glue, Redshift, Kinesis), dbt, Delta Lake, Apache Iceberg, Docker, Kubernetes, BigQuery,
+Data Quality, ETL, Data Modeling, Financial Services Data, REST APIs, Snowflake, MLflow
+
+CERTIFICATIONS
+AWS Certified Data Analytics Specialty — 2022
+AWS Certified Solutions Architect — Associate — 2021

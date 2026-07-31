@@ -7,6 +7,7 @@ class ComponentScore(BaseModel):
     raw_score: float = Field(..., ge=0.0, le=100.0, description="Raw score 0 to 100")
     weighted_score: float = Field(..., description="Weighted contribution to overall score")
     reasoning: str = Field(..., description="Explainable AI reasoning for this score")
+    citations: Optional[List[dict]] = Field(default_factory=list, description="Citations of evidence from candidate resume text")
 
 
 class ScoreBreakdownResponse(BaseModel):
@@ -20,6 +21,8 @@ class ScoreBreakdownResponse(BaseModel):
     location: ComponentScore
     certifications: ComponentScore
     match_summary: str
+    confidence_score: float = Field(default=85.0, description="Match confidence score between 0 and 100")
+    risks: List[str] = Field(default_factory=list, description="List of structured hiring risk warning flags")
 
     model_config = ConfigDict(from_attributes=True)
 

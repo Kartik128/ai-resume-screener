@@ -1,0 +1,33 @@
+Jake Thompson
+jake.thompson@gmail.com | +1 (323) 556-4231 | Los Angeles, CA
+
+PROFESSIONAL SUMMARY
+Product Manager with 5 years of experience in consumer apps and mobile products.
+Good at user research, roadmap planning, and working with design and engineering teams.
+Interested in expanding into FinTech.
+
+WORK EXPERIENCE
+
+Spotify — Los Angeles, CA
+Product Manager, Consumer Mobile
+2021 - Present
+- Managed the Spotify social listening features and playlist curation tools
+- Ran user research sessions and A/B tests to improve engagement metrics
+- Wrote PRDs and worked with 6 engineers in Agile sprints
+
+DoorDash — San Francisco, CA
+Associate Product Manager, Consumer
+2019 - 2021
+- Worked on the DoorDash consumer app checkout experience
+- Collaborated with Engineering on performance improvements reducing app load time by 30%
+- Used Mixpanel and Amplitude for funnel analysis
+
+EDUCATION
+UCLA — Bachelor of Arts, Business Administration — 2019
+
+SKILLS
+Product Management, Mobile Apps, Agile, Scrum, PRDs, User Research, A/B Testing,
+Mixpanel, Amplitude, SQL (basic), Stakeholder Management, Roadmap Planning, Jira, Figma
+
+ACHIEVEMENTS
+- Improved DoorDash checkout conversion rate by 8% through UX optimization

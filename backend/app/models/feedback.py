@@ -43,3 +43,17 @@ class RecruiterFeedback(Base, UUIDMixin, TimestampMixin):
     job: Mapped["Job"] = relationship("Job")
     candidate: Mapped["Candidate"] = relationship("Candidate")
     recruiter: Mapped["User"] = relationship("User")
+
+
+class CandidateExperienceFeedback(Base, UUIDMixin, TimestampMixin):
+    """Enables candidates to leave NPS scores and feedback notes on their portal experience."""
+    __tablename__ = "candidate_experience_feedback"
+
+    candidate_id: Mapped[uuid.UUID] = mapped_column(
+        GUID(), ForeignKey("candidates.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    nps_score: Mapped[int] = mapped_column(nullable=False)
+    feedback_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Relationships
+    candidate: Mapped["Candidate"] = relationship("Candidate")
