@@ -15,28 +15,36 @@
 /* Dark mode theme configurations (default) */
 :root {
   --bg-color: #020617;
+  --bg-gradient: none;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --border-color: rgba(255, 255, 255, 0.08);
   --glass-panel-bg: rgba(15, 23, 42, 0.75);
   --glass-card-bg: rgba(30, 41, 59, 0.6);
   --input-bg: #0f172a;
+  --gradient-start: #3b82f6;
+  --gradient-end: #8b5cf6;
 }
 
-/* Light mode theme overrides */
+/* Sleek Glassmorphic Light / Warm Mode Theme Overrides */
 .light {
-  --bg-color: #f8fafc;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-color: rgba(0, 0, 0, 0.08);
-  --glass-panel-bg: rgba(255, 255, 255, 0.85);
-  --glass-card-bg: rgba(255, 255, 255, 0.95);
-  --input-bg: #e2e8f0;
+  --bg-color: #fdfbf7;
+  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(246, 241, 233, 0.7) 0%, rgba(253, 251, 247, 0.9) 90%), radial-gradient(circle at 90% 80%, rgba(224, 231, 255, 0.5) 0%, rgba(253, 251, 247, 0.9) 100%);
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: rgba(220, 213, 200, 0.4);
+  --glass-panel-bg: rgba(255, 255, 255, 0.75);
+  --glass-card-bg: rgba(255, 255, 255, 0.85);
+  --input-bg: rgba(243, 240, 234, 0.6);
+  --gradient-start: #f97316; /* Warm Orange */
+  --gradient-end: #6366f1;   /* Indigo Accent */
 }
 
 body {
+  background: var(--bg-gradient);
   background-color: var(--bg-color);
   color: var(--text-primary);
+  min-height: 100vh;
 }
 
 .glass-panel {
@@ -53,13 +61,13 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gradient-border {
-  border-image: linear-gradient(to right, #3b82f6, #8b5cf6) 1;
+  border-image: linear-gradient(to right, var(--gradient-start), var(--gradient-end)) 1;
 }
 
 /* Custom Scrollbar */
