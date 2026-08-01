@@ -64,6 +64,13 @@ class Settings(BaseSettings):
         if self.DATABASE_URL.startswith("postgresql://"):
             self.DATABASE_URL = self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
         
+        # Strip sslmode parameters for asyncpg compatibility (preventing unexpected keyword argument 'sslmode')
+        if "postgresql" in self.DATABASE_URL:
+            if "?sslmode=" in self.DATABASE_URL:
+                self.DATABASE_URL = self.DATABASE_URL.split("?sslmode=")[0]
+            elif "&sslmode=" in self.DATABASE_URL:
+                self.DATABASE_URL = self.DATABASE_URL.split("&sslmode=")[0]
+
         # Format sync engine DB URL to match and use psycopg2
         if "sqlite" in self.DATABASE_URL:
             self.SYNC_DATABASE_URL = "sqlite:///./sql_app.db"

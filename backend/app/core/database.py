@@ -11,6 +11,8 @@ from app.core.config import settings
 connect_args = {}
 if "sqlite" in settings.DATABASE_URL:
     connect_args = {"check_same_thread": False, "timeout": 30}
+elif "postgresql" in settings.DATABASE_URL:
+    connect_args = {"ssl": True}
 
 # Async Engine for FastAPI Runtime
 async_engine = create_async_engine(
@@ -29,10 +31,15 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 # Synchronous Engine for Migrations / Synchronous Contexts
+sync_connect_args = {}
+if "postgresql" in settings.SYNC_DATABASE_URL:
+    sync_connect_args = {"sslmode": "require"}
+
 sync_engine = create_engine(
     settings.SYNC_DATABASE_URL,
     echo=settings.DEBUG,
     future=True,
+    connect_args=sync_connect_args,
 )
 
 SyncSessionLocal = sessionmaker(
