@@ -40,6 +40,50 @@
   --gradient-end: #6366f1;   /* Indigo Accent */
 }
 
+/* Tailwind utility class mapping overrides for clean CSS-only light mode */
+.light .bg-slate-950,
+.light .bg-slate-900,
+.light .bg-slate-900\/60,
+.light .bg-slate-900\/40,
+.light .bg-slate-950\/20,
+.light .bg-slate-950\/40,
+.light .bg-slate-950\/60 {
+  background-color: var(--bg-color) !important;
+  background: var(--bg-gradient) !important;
+}
+
+.light .text-white,
+.light .text-slate-100,
+.light .text-slate-200 {
+  color: var(--text-primary) !important;
+}
+
+.light .text-slate-350,
+.light .text-slate-400,
+.light .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+.light .border-slate-800,
+.light .border-slate-700,
+.light .border-slate-850,
+.light .border-slate-900 {
+  border-color: var(--border-color) !important;
+}
+
+.light .bg-slate-800,
+.light .bg-slate-800\/50,
+.light .bg-slate-800\/40 {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+.light .glass-panel,
+.light .glass-card {
+  background: var(--glass-card-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
 body {
   background: var(--bg-gradient);
   background-color: var(--bg-color);
