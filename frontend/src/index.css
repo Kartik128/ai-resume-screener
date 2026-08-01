@@ -12,22 +12,8 @@
   }
 }
 
-/* Dark mode theme configurations (default) */
+/* Sleek Glassmorphic Light / Warm Mode Theme (Default) */
 :root {
-  --bg-color: #020617;
-  --bg-gradient: none;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --glass-panel-bg: rgba(15, 23, 42, 0.75);
-  --glass-card-bg: rgba(30, 41, 59, 0.6);
-  --input-bg: #0f172a;
-  --gradient-start: #3b82f6;
-  --gradient-end: #8b5cf6;
-}
-
-/* Sleek Glassmorphic Light / Warm Mode Theme Overrides */
-.light {
   --bg-color: #fdfbf7;
   --bg-gradient: radial-gradient(circle at 10% 20%, rgba(246, 241, 233, 0.7) 0%, rgba(253, 251, 247, 0.9) 90%), radial-gradient(circle at 90% 80%, rgba(224, 231, 255, 0.5) 0%, rgba(253, 251, 247, 0.9) 100%);
   --text-primary: #1e293b;
@@ -40,46 +26,60 @@
   --gradient-end: #6366f1;   /* Indigo Accent */
 }
 
+/* Dark mode theme configurations (Optional Toggle) */
+.dark {
+  --bg-color: #020617;
+  --bg-gradient: none;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glass-panel-bg: rgba(15, 23, 42, 0.75);
+  --glass-card-bg: rgba(30, 41, 59, 0.6);
+  --input-bg: #0f172a;
+  --gradient-start: #3b82f6;
+  --gradient-end: #8b5cf6;
+}
+
 /* Tailwind utility class mapping overrides for clean CSS-only light mode */
-.light .bg-slate-950,
-.light .bg-slate-900,
-.light .bg-slate-900\/60,
-.light .bg-slate-900\/40,
-.light .bg-slate-950\/20,
-.light .bg-slate-950\/40,
-.light .bg-slate-950\/60 {
+html:not(.dark) .bg-slate-950,
+html:not(.dark) .bg-slate-900,
+html:not(.dark) .bg-slate-900\/60,
+html:not(.dark) .bg-slate-900\/40,
+html:not(.dark) .bg-slate-950\/20,
+html:not(.dark) .bg-slate-950\/40,
+html:not(.dark) .bg-slate-950\/60 {
   background-color: var(--bg-color) !important;
   background: var(--bg-gradient) !important;
 }
 
-.light .text-white,
-.light .text-slate-100,
-.light .text-slate-200 {
+html:not(.dark) .text-white,
+html:not(.dark) .text-slate-100,
+html:not(.dark) .text-slate-200 {
   color: var(--text-primary) !important;
 }
 
-.light .text-slate-350,
-.light .text-slate-400,
-.light .text-slate-500 {
+html:not(.dark) .text-slate-350,
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-slate-500 {
   color: var(--text-secondary) !important;
 }
 
-.light .border-slate-800,
-.light .border-slate-700,
-.light .border-slate-850,
-.light .border-slate-900 {
+html:not(.dark) .border-slate-800,
+html:not(.dark) .border-slate-700,
+html:not(.dark) .border-slate-850,
+html:not(.dark) .border-slate-900 {
   border-color: var(--border-color) !important;
 }
 
-.light .bg-slate-800,
-.light .bg-slate-800\/50,
-.light .bg-slate-800\/40 {
+html:not(.dark) .bg-slate-800,
+html:not(.dark) .bg-slate-800\/50,
+html:not(.dark) .bg-slate-800\/40 {
   background-color: var(--input-bg) !important;
   border-color: var(--border-color) !important;
 }
 
-.light .glass-panel,
-.light .glass-card {
+html:not(.dark) .glass-panel,
+html:not(.dark) .glass-card {
   background: var(--glass-card-bg) !important;
   border-color: var(--border-color) !important;
 }

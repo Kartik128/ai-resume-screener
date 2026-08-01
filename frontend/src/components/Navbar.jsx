@@ -10,7 +10,7 @@ export default function Navbar() {
 
   // Initialize theme from localStorage or system preference
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'dark';
+    return localStorage.getItem('theme') || 'light';
   });
 
   useEffect(() => {
