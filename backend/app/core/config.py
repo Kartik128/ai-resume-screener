@@ -58,5 +58,22 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
+    def __init__(self, **values):
+        super().__init__(**values)
+        # Convert standard postgresql schema to asyncpg for FastAPI async runtime
+        if self.DATABASE_URL.startswith("postgresql://"):
+            self.DATABASE_URL = self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+        
+        # Format sync engine DB URL to match and use psycopg2
+        if "sqlite" in self.DATABASE_URL:
+            self.SYNC_DATABASE_URL = "sqlite:///./sql_app.db"
+        elif "postgresql" in self.DATABASE_URL:
+            url = self.DATABASE_URL
+            if "postgresql+asyncpg://" in url:
+                url = url.replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1)
+            elif "postgresql://" in url:
+                url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
+            self.SYNC_DATABASE_URL = url
+
 
 settings = Settings()
