@@ -218,26 +218,23 @@ export default function Settings() {
 
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center p-6">
-          <div className="glass-panel p-8 rounded-3xl border border-slate-800 text-center max-w-md space-y-4">
+      <DashboardLayout>
+        <div className="flex items-center justify-center p-6 min-h-[60vh]">
+          <div className="glass-panel p-8 rounded-3xl border border-slate-800 text-center max-w-md space-y-4 shadow-premium">
             <Lock className="w-12 h-12 text-rose-500 mx-auto" />
             <h2 className="font-heading font-extrabold text-xl text-white">Access Denied</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               This settings console contains critical GDPR audit logs and data deletion utilities. Only users with **Organization Owner / Admin** privileges are permitted to view this section.
             </p>
           </div>
-        </main>
-      </div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar />
-
-      <main className="flex-1 max-w-5xl w-full mx-auto p-6 space-y-8">
+    <DashboardLayout>
+      <div className="space-y-6">
 
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -800,7 +797,7 @@ export default function Settings() {
             )}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

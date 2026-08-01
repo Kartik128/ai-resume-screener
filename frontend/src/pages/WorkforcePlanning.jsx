@@ -34,6 +34,8 @@ function StatusBadge({ status }) {
   );
 }
 
+import DashboardLayout from '../components/DashboardLayout';
+
 export default function WorkforcePlanning() {
   const { user } = useAuth();
   const [summary, setSummary] = useState(null);
@@ -87,10 +89,8 @@ export default function WorkforcePlanning() {
   const fmt = (n) => n?.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) || '$0';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-      <Navbar />
-
-      <main className="flex-1 max-w-6xl w-full mx-auto p-6 space-y-8">
+    <DashboardLayout>
+      <div className="space-y-6">
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -251,7 +251,7 @@ export default function WorkforcePlanning() {
           )}
         </>
       ) : null}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -156,17 +156,47 @@ export default function CandidateCard({ candidate, onStatusChange, isSelectedFor
           </div>
         </div>
 
-        {/* Score Badge — click to open breakdown */}
-        <div className="flex flex-col items-end gap-1">
+        {/* Circular Match Score Gauge */}
+        <div className="flex flex-col items-center gap-1 shrink-0">
           <button
             onClick={() => setShowBreakdown(true)}
-            className={`px-3 py-1.5 rounded-xl border font-heading font-bold text-base flex items-center space-x-1.5 transition-all hover:scale-105 hover:shadow-lg ${getScoreColor(candidate.overall_score)}`}
+            className="relative flex items-center justify-center w-14 h-14 rounded-full transition-transform hover:scale-105"
             title="View AI Score Breakdown"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>{candidate.overall_score.toFixed(1)}</span>
+            <svg className="w-14 h-14 -rotate-90">
+              <circle
+                cx="28"
+                cy="28"
+                r="22"
+                className="stroke-slate-800"
+                strokeWidth="4"
+                fill="transparent"
+              />
+              <circle
+                cx="28"
+                cy="28"
+                r="22"
+                className={`transition-all duration-500 ${
+                  candidate.overall_score >= 85
+                    ? 'stroke-emerald-500'
+                    : candidate.overall_score >= 70
+                    ? 'stroke-blue-500'
+                    : candidate.overall_score >= 50
+                    ? 'stroke-amber-500'
+                    : 'stroke-rose-500'
+                }`}
+                strokeWidth="4"
+                fill="transparent"
+                strokeDasharray={2 * Math.PI * 22}
+                strokeDashoffset={2 * Math.PI * 22 - (candidate.overall_score / 100) * (2 * Math.PI * 22)}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="absolute text-xs font-heading font-extrabold text-white">
+              {candidate.overall_score.toFixed(0)}%
+            </span>
           </button>
-          <span className="text-[9px] text-slate-600 font-medium">click for breakdown</span>
+          <span className="text-[9px] text-slate-500 font-medium">Breakdown</span>
         </div>
       </div>
 

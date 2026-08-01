@@ -4,6 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, FunnelChart,
 import { BarChart3, Users, Clock, Award, TrendingUp, Sparkles, Send, Loader2, MessageSquare } from 'lucide-react';
 import api from '../services/api';
 
+import DashboardLayout from '../components/DashboardLayout';
+
 export default function Analytics() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,11 +53,9 @@ export default function Analytics() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
-        <div className="glass-panel p-6 rounded-3xl border border-slate-800">
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="glass-panel p-6 rounded-3xl border border-slate-800 shadow-premium">
           <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Recruitment Metrics</span>
           <h1 className="font-heading font-extrabold text-2xl text-white mt-1">HR Analytics & Hiring Funnel</h1>
         </div>
@@ -282,8 +282,7 @@ export default function Analytics() {
             </div>
           )}
         </div>
-
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

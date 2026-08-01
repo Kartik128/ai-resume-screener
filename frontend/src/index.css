@@ -132,3 +132,11 @@ body {
 .light ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
+
+/* Premium shadows for container card styling */
+.light .shadow-premium {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+}
+.dark .shadow-premium {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+}

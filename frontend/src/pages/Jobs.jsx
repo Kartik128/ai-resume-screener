@@ -5,6 +5,8 @@ import JobCreateModal from '../components/JobCreateModal';
 import { Briefcase, Plus, MapPin, Sparkles } from 'lucide-react';
 import api from '../services/api';
 
+import DashboardLayout from '../components/DashboardLayout';
+
 export default function Jobs() {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -27,10 +29,8 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+    <DashboardLayout>
+      <div className="space-y-6">
         <div className="flex items-center justify-between glass-panel p-6 rounded-3xl border border-slate-800">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Organization Postings</span>
@@ -90,9 +90,8 @@ export default function Jobs() {
             ))}
           </div>
         )}
-      </main>
-
+      </div>
       {showJobModal && <JobCreateModal onClose={() => setShowJobModal(false)} onCreated={fetchJobs} />}
-    </div>
+    </DashboardLayout>
   );
 }
