@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { Sparkles, Check, Edit2, Plus, Trash2, Send, MessageSquare, Briefcase, MapPin, DollarSign, Clock, Users, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import DashboardLayout from '../components/DashboardLayout';
 
 export default function JdPreparation() {
   const navigate = useNavigate();
@@ -173,10 +174,8 @@ export default function JdPreparation() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Navbar />
-
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
+    <DashboardLayout>
+      <div className="space-y-6">
         {/* Navigation header */}
         <div className="flex items-center justify-between">
           <button 
@@ -543,7 +542,7 @@ export default function JdPreparation() {
 
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
