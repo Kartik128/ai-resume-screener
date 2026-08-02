@@ -98,34 +98,24 @@ async def data_retention_summary(
     )
     total_candidates = total_result.scalar() or 0
 
-    r90 = await db.execute(
-        text(
-            "SELECT COUNT(*) FROM candidates "
-            "WHERE company_id = :cid "
-            "AND julianday('now') - julianday(created_at) > 90"
-        ),
-        {"cid": cid},
-    )
+    # Dialect-aware queries to support both SQLite (local) and PostgreSQL (Render/Neon)
+    is_postgres = db.bind.dialect.name == "postgresql"
+    if is_postgres:
+        sql_90 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND created_at < NOW() - INTERVAL '90 days'"
+        sql_180 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND created_at < NOW() - INTERVAL '180 days'"
+        sql_365 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND created_at < NOW() - INTERVAL '365 days'"
+    else:
+        sql_90 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND julianday('now') - julianday(created_at) > 90"
+        sql_180 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND julianday('now') - julianday(created_at) > 180"
+        sql_365 = "SELECT COUNT(*) FROM candidates WHERE company_id = :cid AND julianday('now') - julianday(created_at) > 365"
+
+    r90 = await db.execute(text(sql_90), {"cid": cid})
     older_than_90_days = r90.scalar() or 0
 
-    r180 = await db.execute(
-        text(
-            "SELECT COUNT(*) FROM candidates "
-            "WHERE company_id = :cid "
-            "AND julianday('now') - julianday(created_at) > 180"
-        ),
-        {"cid": cid},
-    )
+    r180 = await db.execute(text(sql_180), {"cid": cid})
     older_than_180_days = r180.scalar() or 0
 
-    r365 = await db.execute(
-        text(
-            "SELECT COUNT(*) FROM candidates "
-            "WHERE company_id = :cid "
-            "AND julianday('now') - julianday(created_at) > 365"
-        ),
-        {"cid": cid},
-    )
+    r365 = await db.execute(text(sql_365), {"cid": cid})
     older_than_365_days = r365.scalar() or 0
 
     # Policy recommendation based on oldest cohort size
