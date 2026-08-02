@@ -25,7 +25,7 @@ class ResumeParserService:
     """
 
     @staticmethod
-    def _clean_extracted_skills(skills: List[Any]) -> List[SkillItemDTO]:
+    def _clean_extracted_skills(skills: List[Any], raw_text: Optional[str] = None, candidate_name: Optional[str] = None) -> List[SkillItemDTO]:
         blacklist = {
             "professional experience", "work experience", "experience", "education", "skills",
             "summary", "objective", "contact", "profile", "achievements", "certifications",
@@ -33,6 +33,26 @@ class ResumeParserService:
             "job title", "location", "salary", "remote", "general", "expert", "senior", "junior",
             "lead", "manager", "director", "specialist"
         }
+        
+        # If candidate name parts are provided, blacklist them
+        if candidate_name:
+            for part in candidate_name.lower().split():
+                if len(part) > 2:
+                    blacklist.add(part)
+                    
+        # Check if candidate is HR/Talent Acquisition profile
+        is_hr_profile = False
+        if raw_text:
+            text_lower = raw_text.lower()
+            hr_keywords = {"recruiter", "talent acquisition", "human resources", "hr specialist", "hiring"}
+            if any(kw in text_lower for kw in hr_keywords):
+                is_hr_profile = True
+                
+        tech_blacklist = {
+            "ci/cd", "c#", "java", "python", "kubernetes", "docker", "aws", "gcp", "azure", 
+            "c++", "c", "javascript", "react", "node.js", "typescript", "git"
+        }
+
         cleaned = []
         seen = set()
         for s in skills:
@@ -41,10 +61,20 @@ class ResumeParserService:
             if not name or not name.strip():
                 continue
             name_lower = name.strip().lower()
+            
+            # Prevent candidates' own name from becoming a skill
+            if candidate_name and candidate_name.strip().lower() == name_lower:
+                continue
+                
             if name_lower in blacklist:
                 continue
+                
+            if is_hr_profile and name_lower in tech_blacklist:
+                continue
+                
             if len(name_lower) < 2 or len(name_lower) > 50:
                 continue
+                
             if name_lower not in seen:
                 seen.add(name_lower)
                 if hasattr(s, "name"):
@@ -84,7 +114,7 @@ class ResumeParserService:
                 ]
             
             extract = ResumeStructuredExtract(**parsed_dict)
-            extract.skills = ResumeParserService._clean_extracted_skills(extract.skills)
+            extract.skills = ResumeParserService._clean_extracted_skills(extract.skills, raw_text=raw_text, candidate_name=extract.name)
             return extract
         except Exception as e:
             logger.error(f"OpenAI Resume Parsing failed: {str(e)}. Falling back to heuristic engine.")
@@ -526,7 +556,7 @@ class ResumeParserService:
                     extracted_skills.append(SkillItemDTO(name=skill_name, category="Domain Competency"))
                     work_skill_names.add(skill_name.lower())
 
-        extracted_skills = ResumeParserService._clean_extracted_skills(extracted_skills)
+        extracted_skills = ResumeParserService._clean_extracted_skills(extracted_skills, raw_text=raw_text, candidate_name=contact["name"])
         if not extracted_skills:
             extracted_skills = []
 

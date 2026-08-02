@@ -102,7 +102,7 @@ export default function CandidateCard({ candidate, onStatusChange, isSelectedFor
                 <FileText className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-400 transition-colors" />
               </button>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                AI Verified
+                Resume parsed successfully — {candidate.extraction_confidence || 88}% extraction confidence
               </span>
             </div>
             <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1">
@@ -110,7 +110,7 @@ export default function CandidateCard({ candidate, onStatusChange, isSelectedFor
               <span className="flex items-center"><MapPin className="w-3.5 h-3.5 mr-1" />{candidate.location || 'Remote'}</span>
               {candidate.rank_percentile !== undefined && (
                 <span className="text-[10px] text-slate-400 bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded font-semibold">
-                  Top {Math.max(0.1, 100 - candidate.rank_percentile).toFixed(0)}% Rank
+                  Rank #{candidate.rank_index || 1} · Top {Math.max(1, 100 - candidate.rank_percentile).toFixed(0)}%
                 </span>
               )}
             </div>
