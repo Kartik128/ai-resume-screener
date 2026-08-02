@@ -2,9 +2,24 @@ import React from 'react';
 import Navbar from './Navbar';
 import { Search, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function DashboardLayout({ children }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    const params = new URLSearchParams(searchParams);
+    if (value) {
+      params.set('search', value);
+    } else {
+      params.delete('search');
+    }
+    navigate(`?${params.toString()}`, { replace: true });
+  };
   
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex">
@@ -21,6 +36,8 @@ export default function DashboardLayout({ children }) {
             <input
               type="text"
               placeholder="Search candidates, jobs, resumes..."
+              value={searchQuery}
+              onChange={handleSearchChange}
               className="w-full bg-slate-900/60 border border-slate-800 rounded-xl pl-11 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all"
             />
           </div>

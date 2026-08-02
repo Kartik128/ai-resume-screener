@@ -13,6 +13,7 @@ import IntakeCopilotModal from '../components/IntakeCopilotModal';
 import DashboardLayout from '../components/DashboardLayout';
 
 import { useAuth } from '../context/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -77,6 +78,18 @@ export default function Dashboard() {
       setSelectedForCompare([...selectedForCompare, candId]);
     }
   };
+
+  const [searchParams] = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').toLowerCase();
+
+  const filteredCandidates = candidates.filter((cand) => {
+    if (!searchQuery) return true;
+    const nameMatch = cand.full_name?.toLowerCase().includes(searchQuery);
+    const locationMatch = cand.location?.toLowerCase().includes(searchQuery);
+    const summaryMatch = cand.summary_text?.toLowerCase().includes(searchQuery) ||
+      cand.score_breakdown?.match_summary?.toLowerCase().includes(searchQuery);
+    return nameMatch || locationMatch || summaryMatch;
+  });
 
   const currentJob = jobs.find((j) => j.id === selectedJobId);
 
@@ -293,17 +306,27 @@ export default function Dashboard() {
         {loading ? (
           <div className="py-20 text-center text-slate-400 text-xs font-medium">Evaluating candidate scores...</div>
         ) : candidates.length > 0 ? (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-5' : 'flex flex-col gap-4'}>
-            {candidates.map((cand) => (
-              <CandidateCard
-                key={cand.candidate_id}
-                candidate={cand}
-                onStatusChange={fetchCandidates}
-                isSelectedForCompare={selectedForCompare.includes(cand.candidate_id)}
-                onToggleSelectCompare={toggleSelectCompare}
-              />
-            ))}
-          </div>
+          filteredCandidates.length > 0 ? (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-5' : 'flex flex-col gap-4'}>
+              {filteredCandidates.map((cand) => (
+                <CandidateCard
+                  key={cand.candidate_id}
+                  candidate={cand}
+                  onStatusChange={fetchCandidates}
+                  isSelectedForCompare={selectedForCompare.includes(cand.candidate_id)}
+                  onToggleSelectCompare={toggleSelectCompare}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="glass-panel p-16 rounded-3xl text-center space-y-3 border border-slate-800 shadow-premium">
+              <Search className="w-10 h-10 text-slate-600 mx-auto" />
+              <h3 className="font-heading font-bold text-lg text-white">No matching candidates found</h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Try refining your search query or check the spelling.
+              </p>
+            </div>
+          )
         ) : (
           <div className="glass-panel p-16 rounded-3xl text-center space-y-3 border border-slate-800 shadow-premium">
             <Sparkles className="w-10 h-10 text-slate-600 mx-auto" />

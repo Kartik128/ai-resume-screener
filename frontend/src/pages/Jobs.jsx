@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import JobCreateModal from '../components/JobCreateModal';
 import { Briefcase, Plus, MapPin, Sparkles } from 'lucide-react';
@@ -27,6 +27,18 @@ export default function Jobs() {
     }
     setLoading(false);
   };
+
+  const [searchParams] = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').toLowerCase();
+
+  const filteredJobs = jobs.filter((job) => {
+    if (!searchQuery) return true;
+    const titleMatch = job.title?.toLowerCase().includes(searchQuery);
+    const deptMatch = job.department?.toLowerCase().includes(searchQuery);
+    const locationMatch = job.location?.toLowerCase().includes(searchQuery);
+    const skillsMatch = job.job_skills?.some((js) => js.skill?.name?.toLowerCase().includes(searchQuery));
+    return titleMatch || deptMatch || locationMatch || skillsMatch;
+  });
 
   return (
     <DashboardLayout>
@@ -57,38 +69,48 @@ export default function Jobs() {
         {loading ? (
           <div className="py-20 text-center text-slate-400 text-xs">Loading Job Openings...</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {jobs.map((job) => (
-              <div key={job.id} className="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-950 text-blue-400 border border-blue-800">
-                      {job.department || 'Engineering'}
-                    </span>
-                    <span className="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
-                      {job.status}
-                    </span>
-                  </div>
-                  <h3 className="font-heading font-bold text-lg text-white mt-2 leading-tight">{job.title}</h3>
-                  <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1">
-                    <span>{job.min_experience_years || 0}+ Yrs Exp</span>
-                    <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" />{job.location || 'Remote'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mandatory Skills</h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {job.job_skills?.filter((s) => s.is_mandatory).slice(0, 5).map((js) => (
-                      <span key={js.id} className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800 text-[10px] font-medium">
-                        {js.skill?.name}
+          filteredJobs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredJobs.map((job) => (
+                <div key={job.id} className="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 shadow-premium">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-950 text-blue-400 border border-blue-800">
+                        {job.department || 'Engineering'}
                       </span>
-                    ))}
+                      <span className="text-[10px] uppercase font-bold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
+                        {job.status}
+                      </span>
+                    </div>
+                    <h3 className="font-heading font-bold text-lg text-white mt-2 leading-tight">{job.title}</h3>
+                    <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1">
+                      <span>{job.min_experience_years || 0}+ Yrs Exp</span>
+                      <span className="flex items-center"><MapPin className="w-3 h-3 mr-0.5" />{job.location || 'Remote'}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mandatory Skills</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.job_skills?.filter((s) => s.is_mandatory).slice(0, 5).map((js) => (
+                        <span key={js.id} className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800 text-[10px] font-medium">
+                          {js.skill?.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-panel p-16 rounded-3xl text-center space-y-3 border border-slate-800 shadow-premium">
+              <Briefcase className="w-10 h-10 text-slate-600 mx-auto" />
+              <h3 className="font-heading font-bold text-lg text-white">No matching job openings found</h3>
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
+                Try refining your search query or check spelling.
+              </p>
+            </div>
+          )
         )}
       </div>
       {showJobModal && <JobCreateModal onClose={() => setShowJobModal(false)} onCreated={fetchJobs} />}
