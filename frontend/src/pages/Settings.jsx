@@ -6,6 +6,7 @@ import {
   UserPlus, Mail, Key
 } from 'lucide-react';
 import api from '../services/api';
+import DashboardLayout from '../components/DashboardLayout';
 
 function StatCard({ label, value, sub, icon: Icon, color = 'blue' }) {
   const colMap = {
