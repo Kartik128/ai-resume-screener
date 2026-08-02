@@ -115,8 +115,6 @@ async def get_dashboard_candidate_cards(
                 else None
             )
 
-        summary_res = await SummaryService.generate_summary(job, res)
-
         # Query duplicate status
         from app.models.duplicate_candidate import DuplicateCandidate
         dup_res = await db.execute(
@@ -151,7 +149,7 @@ async def get_dashboard_candidate_cards(
                 notes=app_ent.notes,
                 overall_score=score_ent.overall_score,
                 score_breakdown=breakdown,
-                summary_text=summary_res.executive_summary,
+                summary_text=breakdown.match_summary if breakdown else "Evaluation complete.",
                 score_id=score_ent.id,
                 duplicate_detected=True if dup_ent else False,
                 original_candidate_id=dup_ent.canonical_id if dup_ent else None,
