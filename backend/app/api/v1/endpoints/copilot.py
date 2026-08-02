@@ -219,12 +219,26 @@ async def generate_outreach_email(
     key_resp = (parsed.get("responsibilities") or [])[:2]
     resp_phrase = f" Key areas include: {'; '.join(key_resp)}." if key_resp else ""
 
+    # Detect domain/department to use relevant non-technical phrasing
+    dept_l = job.department.lower() if job.department else ""
+    title_l = job.title.lower() if job.title else ""
+    is_tech = any(k in dept_l for k in ["eng", "tech", "data", "develop", "software"]) or any(k in title_l for k in ["engineer", "developer", "architect", "programmer", "coder"])
+
+    if is_tech:
+        action_phrase = "moves fast, writes clean, and ships"
+    elif any(k in dept_l for k in ["hr", "human", "talent", "recruit"]):
+        action_phrase = "moves fast, connects deeply, and builds high-performing teams"
+    elif any(k in dept_l for k in ["sales", "market"]):
+        action_phrase = "moves fast, connects with clients, and drives revenue growth"
+    else:
+        action_phrase = "moves fast, solves problems, and drives results"
+
     if body.tone == "startup":
         subject = f"🚀 Hey {first_name} — quick chat about {job.title} at {company}?"
         email_body = (
             f"Hey {first_name},\n\n"
             f"I came across your profile and was genuinely impressed — {exp_phrase} in {skills_str}{location_phrase} is exactly the kind of background we're hunting for.\n\n"
-            f"We're building something big at {company} and we need a {job.title} who moves fast, writes clean, and ships.{resp_phrase}\n\n"
+            f"We're building something big at {company} and we need a {job.title} who {action_phrase}.{resp_phrase}\n\n"
             f"No long process — just a quick 15-minute call to see if the energy is right. You in?\n\n"
             f"Cheers,\n{recruiter}"
         )
