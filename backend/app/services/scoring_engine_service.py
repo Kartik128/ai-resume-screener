@@ -112,9 +112,10 @@ class ScoringEngineService:
         if req_min_exp == 0.0:
             exp_raw = 100.0
             exp_reasoning = f"No minimum experience requirement. Candidate has {cand_exp_years} years."
-        elif cand_exp_years >= req_max_exp:
-            exp_raw = 95.0  # Slightly cap over-experienced candidates (may have salary expectations)
-            exp_reasoning = f"Overqualified candidate: Has {cand_exp_years} years, which is above the target range of {req_min_exp}–{req_max_exp} years."
+        elif req_max_exp > 0 and cand_exp_years > req_max_exp:
+            excess = cand_exp_years - req_max_exp
+            exp_raw = max(60.0, 90.0 - (excess * 5.0))
+            exp_reasoning = f"Overqualified candidate: Has {cand_exp_years} years, which is above the target range of {req_min_exp}–{req_max_exp} years (overqualified by {round(excess, 1)} years)."
         elif cand_exp_years >= req_min_exp:
             # Proportional score within the target band
             band = max(1.0, req_max_exp - req_min_exp)
@@ -399,6 +400,9 @@ class ScoringEngineService:
         if req_min_exp > 0 and cand_exp_years < req_min_exp:
             hiring_risks.append(f"Experience gap: has {cand_exp_years} years, targets {req_min_exp} minimum.")
             
+        if req_max_exp > 0 and cand_exp_years > req_max_exp:
+            hiring_risks.append(f"Overqualified candidate: experience ({cand_exp_years} years) exceeds target range of {req_min_exp}–{req_max_exp} years.")
+
         if missing_skills_list:
             hiring_risks.append(f"Missing core framework skills: {', '.join(missing_skills_list)}")
             

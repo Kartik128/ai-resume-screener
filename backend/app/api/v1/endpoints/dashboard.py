@@ -173,6 +173,7 @@ async def get_dashboard_candidate_cards(
             flags = []
             # 1. Percentile Rank
             card.rank_percentile = round(((n_cards - 1 - idx) / max(1, n_cards - 1)) * 100, 1)
+            card.rank_index = idx + 1
 
             # 2. Tie warnings (within 2 points of neighbors)
             has_tie = False

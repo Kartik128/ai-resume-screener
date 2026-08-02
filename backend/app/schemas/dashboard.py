@@ -24,6 +24,7 @@ class CandidateCardResponse(BaseModel):
     score_id: Optional[uuid.UUID] = None
     calibration_flags: Optional[List[str]] = Field(default_factory=list, description="Calibration warnings: 'TIE', 'LOW_EVIDENCE', 'OUTLIER'")
     rank_percentile: Optional[float] = Field(None, description="Percentile rank compared to other candidates for this job")
+    rank_index: Optional[int] = Field(None, description="Absolute rank index (1-based) of the candidate")
     duplicate_detected: Optional[bool] = False
     original_candidate_id: Optional[uuid.UUID] = None
     assessment_score: Optional[float] = None
