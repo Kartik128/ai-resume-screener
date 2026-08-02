@@ -134,35 +134,30 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Job Selection horizontal tabs */}
-        <div className="space-y-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Job Pipeline Positions</span>
-          <div className="flex space-x-4 overflow-x-auto pb-2.5 scrollbar-none">
-            {jobs.map((j) => {
-              const isSelected = j.id === selectedJobId;
-              return (
-                <button
-                  key={j.id}
-                  onClick={() => setSelectedJobId(j.id)}
-                  className={`glass-card min-w-[240px] text-left p-4 rounded-2xl relative transition-all duration-300 shadow-premium ${
-                    isSelected 
-                      ? 'ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/10'
-                      : 'hover:bg-slate-900/40 opacity-80'
-                  }`}
-                >
-                  <div className={`w-1 h-8 absolute left-0 top-1/2 -translate-y-1/2 rounded-r-lg ${isSelected ? 'bg-indigo-500' : 'bg-slate-600'}`}></div>
-                  <div className="pl-3">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{j.department || 'Engineering'}</p>
-                    <h4 className="font-heading font-extrabold text-sm text-white mt-0.5 line-clamp-1">{j.title}</h4>
-                    <p className="text-[10px] text-slate-400 mt-2 flex items-center space-x-1.5">
-                      <span>💼 {j.min_experience_years}+ Yrs Exp</span>
-                      <span>•</span>
-                      <span>📍 {j.location}</span>
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+        {/* Job Selection Dropdown */}
+        <div className="flex items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shadow-premium">
+          <label htmlFor="job-selector" className="text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">
+            Active Job Position:
+          </label>
+          <div className="relative flex-1 max-w-md">
+            <select
+              id="job-selector"
+              value={selectedJobId || ''}
+              onChange={(e) => setSelectedJobId(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-indigo-500 transition-all cursor-pointer appearance-none pr-10"
+            >
+              <option value="" disabled>-- Select a Job Position --</option>
+              {jobs.map((j) => (
+                <option key={j.id} value={j.id}>
+                  {j.title} ({j.department || 'General'}) — {j.location || 'Remote'}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+              </svg>
+            </div>
           </div>
         </div>
 
