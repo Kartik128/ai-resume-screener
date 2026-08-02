@@ -12,10 +12,6 @@ export default function CandidateTimelineModal({ applicationId, candidateId, can
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Audio Transcripts States
-  const [transcriptProfile, setTranscriptProfile] = useState(null);
-  const [uploadingAudio, setUploadingAudio] = useState(false);
-
   // Offer Workflow State
   const [showOfferModal, setShowOfferModal] = useState(false);
 
@@ -32,40 +28,6 @@ export default function CandidateTimelineModal({ applicationId, candidateId, can
       setError('Could not retrieve activity history.');
     }
     setLoading(false);
-  };
-
-  const loadTranscript = async () => {
-    try {
-      const res = await api.get(`/transcripts/candidate/${candidateId}`);
-      if (res.data) {
-        setTranscriptProfile(res.data);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleUploadAudio = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingAudio(true);
-    setError('');
-    const formData = new FormData();
-    formData.append('candidate_id', candidateId);
-    formData.append('job_id', 'bdbd8046-98fb-4cd8-b7d9-621049068f5c'); // mock job fallback
-    formData.append('file', file);
-
-    try {
-      const res = await api.post('/transcripts/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setTranscriptProfile(res.data);
-      setSuccess('Audio processed, transcribed, and aligned with scorecard!');
-      await loadHistory();
-    } catch (err) {
-      setError('Failed to process interview transcript.');
-    }
-    setUploadingAudio(false);
   };
 
   const handleAddNote = async (e) => {
@@ -131,7 +93,6 @@ export default function CandidateTimelineModal({ applicationId, candidateId, can
 
   useEffect(() => {
     loadHistory();
-    loadTranscript();
   }, [applicationId]);
 
   const getActivityIcon = (type) => {
@@ -205,43 +166,6 @@ export default function CandidateTimelineModal({ applicationId, candidateId, can
           </button>
         </div>
 
-        {/* Interview Intelligence Audio Transcript Section */}
-        <div className="p-6 border-b border-slate-800/80 bg-purple-950/10 space-y-3 shrink-0">
-          <div className="text-xs font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-1">✨ Interview Intelligence (Zoom / Teams Transcripts)</div>
-          
-          {transcriptProfile ? (
-            <div className="space-y-2">
-              <div className="flex justify-between items-center bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-                <span className="text-[11px] text-slate-300 font-semibold">🎙️ Transcript Analysis Available</span>
-                <span className="px-2 py-0.5 rounded bg-purple-900/50 border border-purple-800 text-[10px] text-purple-300 font-bold">Alignment Score: {transcriptProfile.alignment_score}%</span>
-              </div>
-              <div className="text-[10px] bg-slate-950/80 p-3 rounded-lg border border-slate-900 text-slate-400 space-y-1">
-                <p className="font-bold text-slate-300">AI Summary & Scorecard Alignment Match:</p>
-                <p className="italic">"{transcriptProfile.summary_analysis}"</p>
-                <details className="mt-2 cursor-pointer">
-                  <summary className="text-[9px] text-purple-400 hover:underline">View Raw Transcript Text</summary>
-                  <pre className="mt-1.5 p-2 rounded bg-slate-900 border border-slate-850 text-[9px] font-mono text-slate-450 overflow-x-auto whitespace-pre-wrap max-h-32">
-                    {transcriptProfile.raw_transcript}
-                  </pre>
-                </details>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-[10px] text-slate-400">No meeting recordings analyzed. Upload Zoom/Teams audio files to auto-transcribe & score.</p>
-              <label className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold cursor-pointer transition-all shrink-0">
-                {uploadingAudio ? 'Transcribing...' : 'Upload Recording'}
-                <input
-                  type="file"
-                  accept=".mp3,.wav,.m4a,.mp4"
-                  onChange={handleUploadAudio}
-                  disabled={uploadingAudio}
-                  className="hidden"
-                />
-              </label>
-            </div>
-          )}
-        </div>
 
         {/* Note Editor */}
         <form onSubmit={handleAddNote} className="p-6 border-b border-slate-800/80 bg-slate-900/20 shrink-0 space-y-3">
