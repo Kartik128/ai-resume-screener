@@ -61,6 +61,7 @@ class ScoringEngineService:
         mandatory_req = parsed_job.get("mandatory_skills", [])
         mandatory_req_names = [s.get("name", s) if isinstance(s, dict) else s for s in mandatory_req]
 
+        matched_count = 0
         missing_skills_list = []
         if mandatory_req_names:
             match_req = SemanticMatchRequest(
@@ -366,6 +367,13 @@ class ScoringEngineService:
             + loc_score.weighted_score
         )
         overall = round(min(overall, 100.0), 1)
+
+        # Gate / Capping Rules to prevent score clustering for unqualified candidates
+        if mandatory_req_names:
+            if matched_count == 0:
+                overall = min(overall, 38.0)
+            elif (matched_count / len(mandatory_req_names)) < 0.3:
+                overall = min(overall, 50.0)
 
         # Generate a rich match summary
         top_skills = cand_skills[:4]

@@ -244,9 +244,37 @@ class SemanticMatcherService:
                     return s.strip(), start, end
             return None, None, None
 
+        # Check if candidate is HR/Talent Acquisition profile
+        is_hr_profile = False
+        if request.candidate_experience_text:
+            text_lower = request.candidate_experience_text.lower()
+            hr_keywords = {"recruiter", "talent acquisition", "human resources", "hr specialist", "hiring", "recruit"}
+            if any(kw in text_lower for kw in hr_keywords):
+                is_hr_profile = True
+
+        tech_blacklist = {
+            "ci/cd", "c#", "java", "python", "kubernetes", "docker", "aws", "gcp", "azure", 
+            "c++", "javascript", "react", "node.js", "typescript", "git", "real estate", "real-estate",
+            "c-sharp", "golang", "devops", "sql server", "mysql"
+        }
+
         for req_skill in request.required_skills:
             req_norm = SemanticMatcherService._normalize(req_skill)
             req_tokens = SemanticMatcherService._get_tokens(req_skill)
+
+            # Prevent tech keywords matching on HR candidate profiles
+            if is_hr_profile and any(tech in req_norm for tech in tech_blacklist):
+                details.append(SkillMatchDetail(
+                    required_skill=req_skill,
+                    matched_candidate_skill=None,
+                    match_type=MatchType.MISSING,
+                    similarity_score=0.0,
+                    reasoning=f"Irrelevant tech/real-estate skill ignored for Human Resources profile.",
+                    evidence_sentence=None,
+                    char_start=None,
+                    char_end=None,
+                ))
+                continue
 
             # ── Strategy 1: Exact match in candidate skill list ──────────────
             if req_norm in skills_exact:
