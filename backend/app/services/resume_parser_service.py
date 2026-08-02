@@ -25,6 +25,35 @@ class ResumeParserService:
     """
 
     @staticmethod
+    def _clean_extracted_skills(skills: List[Any]) -> List[SkillItemDTO]:
+        blacklist = {
+            "professional experience", "work experience", "experience", "education", "skills",
+            "summary", "objective", "contact", "profile", "achievements", "certifications",
+            "projects", "publications", "languages", "references", "candidate", "resume", "cv",
+            "job title", "location", "salary", "remote", "general", "expert", "senior", "junior",
+            "lead", "manager", "director", "specialist"
+        }
+        cleaned = []
+        seen = set()
+        for s in skills:
+            name = s.name if hasattr(s, "name") else s.get("name")
+            category = s.category if hasattr(s, "category") else s.get("category", "General")
+            if not name or not name.strip():
+                continue
+            name_lower = name.strip().lower()
+            if name_lower in blacklist:
+                continue
+            if len(name_lower) < 2 or len(name_lower) > 50:
+                continue
+            if name_lower not in seen:
+                seen.add(name_lower)
+                if hasattr(s, "name"):
+                    cleaned.append(s)
+                else:
+                    cleaned.append(SkillItemDTO(name=name.strip(), category=category))
+        return cleaned
+
+    @staticmethod
     async def parse_resume_text(raw_text: str, version: str = "v1") -> ResumeStructuredExtract:
         if not settings.OPENAI_API_KEY:
             logger.warning("OPENAI_API_KEY not set. Using Heuristic Rule Engine for Resume Parsing.")
@@ -46,7 +75,17 @@ class ResumeParserService:
             )
             raw_json = response.choices[0].message.content
             parsed_dict = json.loads(raw_json)
-            return ResumeStructuredExtract(**parsed_dict)
+            
+            # Clean skills list to remove headers and generic words
+            if "skills" in parsed_dict:
+                parsed_dict["skills"] = [
+                    {"name": s.get("name", ""), "category": s.get("category", "General")}
+                    for s in parsed_dict["skills"]
+                ]
+            
+            extract = ResumeStructuredExtract(**parsed_dict)
+            extract.skills = ResumeParserService._clean_extracted_skills(extract.skills)
+            return extract
         except Exception as e:
             logger.error(f"OpenAI Resume Parsing failed: {str(e)}. Falling back to heuristic engine.")
             return ResumeParserService._fallback_parse(raw_text)
@@ -487,8 +526,9 @@ class ResumeParserService:
                     extracted_skills.append(SkillItemDTO(name=skill_name, category="Domain Competency"))
                     work_skill_names.add(skill_name.lower())
 
+        extracted_skills = ResumeParserService._clean_extracted_skills(extracted_skills)
         if not extracted_skills:
-            extracted_skills = [SkillItemDTO(name="Professional Experience", category="General")]
+            extracted_skills = []
 
         # Certifications
         certifications = ResumeParserService._extract_certifications(raw_text)

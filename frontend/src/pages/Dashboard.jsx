@@ -74,9 +74,30 @@ export default function Dashboard() {
     if (selectedForCompare.includes(candId)) {
       setSelectedForCompare(selectedForCompare.filter((id) => id !== candId));
     } else {
-      if (selectedForCompare.length >= 5) return;
+      if (selectedForCompare.length >= 10) return; // Expand selection limit for bulk actions
       setSelectedForCompare([...selectedForCompare, candId]);
     }
+  };
+
+  const handleBulkStatusChange = async (newStatus) => {
+    setLoading(true);
+    try {
+      for (const candId of selectedForCompare) {
+        const card = candidates.find(c => c.candidate_id === candId);
+        if (card && card.application_id) {
+          await api.patch(`/dashboard/application/${card.application_id}/status`, {
+            status: newStatus,
+            notes: `[Bulk Action update]`
+          });
+        }
+      }
+      setSelectedForCompare([]);
+      await fetchCandidates();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to update status in bulk.");
+    }
+    setLoading(false);
   };
 
   const [searchParams] = useSearchParams();
@@ -206,14 +227,43 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center space-x-3 self-end md:self-auto">
-            {selectedForCompare.length >= 2 && (
-              <button
-                onClick={() => setShowCompareModal(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center space-x-2 shadow-lg shadow-purple-500/25"
-              >
-                <Columns className="w-4 h-4" />
-                <span>Compare ({selectedForCompare.length})</span>
-              </button>
+            {selectedForCompare.length > 0 && (
+              <div className="flex items-center space-x-2 bg-slate-900 border border-slate-800 p-1.5 rounded-xl">
+                <span className="text-xs text-slate-350 font-bold px-2">{selectedForCompare.length} Selected:</span>
+                
+                {selectedForCompare.length >= 2 && (
+                  <button
+                    onClick={() => setShowCompareModal(true)}
+                    className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-bold flex items-center space-x-1 transition-all"
+                  >
+                    <Columns className="w-3.5 h-3.5" />
+                    <span>Compare</span>
+                  </button>
+                )}
+                
+                {user?.role !== 'viewer' && (
+                  <>
+                    <button
+                      onClick={() => handleBulkStatusChange('shortlisted')}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-[10px] font-bold transition-colors"
+                    >
+                      Shortlist
+                    </button>
+                    <button
+                      onClick={() => handleBulkStatusChange('rejected')}
+                      className="px-3 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 text-[10px] font-bold transition-colors"
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => setSelectedForCompare([])}
+                  className="px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white text-[10px] transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
             )}
 
             {selectedJobId && (

@@ -114,7 +114,7 @@ class ScoringEngineService:
             exp_reasoning = f"No minimum experience requirement. Candidate has {cand_exp_years} years."
         elif cand_exp_years >= req_max_exp:
             exp_raw = 95.0  # Slightly cap over-experienced candidates (may have salary expectations)
-            exp_reasoning = f"Candidate has {cand_exp_years} years — above the target range of {req_min_exp}–{req_max_exp} years."
+            exp_reasoning = f"Overqualified candidate: Has {cand_exp_years} years, which is above the target range of {req_min_exp}–{req_max_exp} years."
         elif cand_exp_years >= req_min_exp:
             # Proportional score within the target band
             band = max(1.0, req_max_exp - req_min_exp)
@@ -122,10 +122,10 @@ class ScoringEngineService:
             exp_reasoning = f"Candidate has {cand_exp_years} years — within required range of {req_min_exp}–{req_max_exp} years."
         elif cand_exp_years >= req_min_exp * 0.7:
             exp_raw = 60.0 + (25.0 * (cand_exp_years / req_min_exp))
-            exp_reasoning = f"Candidate has {cand_exp_years} years — slightly below required minimum of {req_min_exp} years."
+            exp_reasoning = f"Underqualified candidate: Candidate has {cand_exp_years} years — slightly below required minimum of {req_min_exp} years."
         else:
             exp_raw = max(20.0, (cand_exp_years / req_min_exp) * 60.0) if req_min_exp > 0 else 50.0
-            exp_reasoning = f"Experience gap: Candidate has {cand_exp_years} years vs {req_min_exp} years required."
+            exp_reasoning = f"Underqualified candidate: Experience gap. Candidate has {cand_exp_years} years vs {req_min_exp} years required."
 
         exp_score = ComponentScore(
             weight_percentage=W["experience"],

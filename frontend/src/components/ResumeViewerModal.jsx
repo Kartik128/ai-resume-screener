@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   X, Download, ExternalLink, FileText, Briefcase, GraduationCap,
   Award, Star, Mail, Phone, MapPin, Linkedin, Github, Globe,
-  Clock, ChevronDown, ChevronUp, Loader2
+  Clock, ChevronDown, ChevronUp, Loader2, Sliders
 } from 'lucide-react';
 import api from '../services/api';
 
@@ -18,6 +18,13 @@ export default function ResumeViewerModal({ resumeId, candidateName, onClose }) 
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  // Manual Override and Error Reporting States
+  const [overrideScore, setOverrideScore] = useState(75);
+  const [overrideReason, setOverrideReason] = useState('');
+  const [overridesList, setOverridesList] = useState([]);
+  const [submittingOverride, setSubmittingOverride] = useState(false);
+  const [reportedFields, setReportedFields] = useState([]);
+
   useEffect(() => {
     if (!resumeId) return;
     const load = async () => {
@@ -25,6 +32,16 @@ export default function ResumeViewerModal({ resumeId, candidateName, onClose }) 
       try {
         const res = await api.get(`/resumes/${resumeId}/preview`);
         setData(res.data);
+        
+        // Fetch score override history logs
+        if (res.data.score_id) {
+          try {
+            const hRes = await api.get(`/score_overrides/${res.data.score_id}`);
+            setOverridesList(hRes.data);
+          } catch (hErr) {
+            console.error("Failed to load score override logs", hErr);
+          }
+        }
       } catch (e) {
         setError('Could not load resume preview. ' + (e?.response?.data?.error?.message || e.message));
       }
@@ -32,6 +49,39 @@ export default function ResumeViewerModal({ resumeId, candidateName, onClose }) 
     };
     load();
   }, [resumeId]);
+
+  const handleApplyOverride = async () => {
+    if (!overrideReason.trim()) {
+      alert("Please provide a reasoning justification for overriding the score.");
+      return;
+    }
+    setSubmittingOverride(true);
+    try {
+      await api.post(`/score_overrides/${data.score_id}/override`, {
+        dimension: 'mandatory_skills',
+        new_raw_score: Number(overrideScore),
+        reason: overrideReason
+      });
+      
+      // Reload profile data and audit trail lists
+      const res = await api.get(`/resumes/${resumeId}/preview`);
+      setData(res.data);
+      const hRes = await api.get(`/score_overrides/${data.score_id}`);
+      setOverridesList(hRes.data);
+      setOverrideReason('');
+      alert("Manual score override successfully registered and candidate ranked updated!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit score override details.");
+    }
+    setSubmittingOverride(false);
+  };
+
+  const handleReportError = (field) => {
+    if (reportedFields.includes(field)) return;
+    setReportedFields([...reportedFields, field]);
+    alert(`Feedback logged: '${field}' reported as AI parsing error. Thank you for refining HireRyt!`);
+  };
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.drag-header')) {
@@ -267,11 +317,25 @@ export default function ResumeViewerModal({ resumeId, candidateName, onClose }) 
                   </button>
                   {expandedSection.skills && (
                     <div className="p-4 bg-slate-950/40 flex flex-wrap gap-2">
-                      {data.skills.map((skill, i) => (
-                        <span key={i} className="px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-950/50 text-blue-300 border border-blue-800/40">
-                          {typeof skill === 'object' ? skill.name : skill}
-                        </span>
-                      ))}
+                      {data.skills.map((skill, i) => {
+                        const name = typeof skill === 'object' ? skill.name : skill;
+                        const isReported = reportedFields.includes(`skill-${name}`);
+                        return (
+                          <span 
+                            key={i} 
+                            onClick={() => handleReportError(`skill-${name}`)}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium border flex items-center gap-1.5 cursor-pointer transition-all ${
+                              isReported
+                                ? 'bg-rose-950/40 text-rose-400 border-rose-800/50 line-through'
+                                : 'bg-blue-950/50 text-blue-300 border-blue-800/40 hover:bg-rose-950/20 hover:border-rose-900/40 hover:text-rose-300'
+                            }`}
+                            title="Click to report as parsing error"
+                          >
+                            <span>{name}</span>
+                            <span className="text-[9px] opacity-60">⚠️</span>
+                          </span>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -389,6 +453,72 @@ export default function ResumeViewerModal({ resumeId, candidateName, onClose }) 
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {/* ── Recruiter Overrides & Audit Log (Premium PM Feature) ── */}
+              {data.score_id && (
+                <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
+                    <Sliders className="w-4 h-4 text-indigo-400" />
+                    <span>Recruiter Manual Override & Audit Trail</span>
+                  </h4>
+                  
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-slate-950/40 p-4 rounded-xl border border-slate-850">
+                    <div className="flex-1 w-full space-y-2">
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-slate-300">Override Overall Score:</span>
+                        <span className="text-indigo-400 text-sm font-bold">{overrideScore}/100</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="0" 
+                        max="100" 
+                        value={overrideScore}
+                        onChange={(e) => setOverrideScore(e.target.value)}
+                        className="w-full h-1.5 bg-slate-850 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                      />
+                    </div>
+                    
+                    <div className="flex-1 w-full space-y-1.5">
+                      <input 
+                        type="text" 
+                        placeholder="Enter justification note (required)..."
+                        value={overrideReason}
+                        onChange={(e) => setOverrideReason(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                      />
+                    </div>
+                    
+                    <button
+                      onClick={handleApplyOverride}
+                      disabled={submittingOverride}
+                      className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 shrink-0"
+                    >
+                      {submittingOverride ? 'Saving...' : 'Apply Score'}
+                    </button>
+                  </div>
+                  
+                  {/* Audit Trail List */}
+                  {overridesList.length > 0 && (
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Historical Audit Logs:</p>
+                      {overridesList.map((log, idx) => (
+                        <div key={idx} className="p-2.5 rounded-lg bg-slate-950/20 border border-slate-850 text-xs flex justify-between gap-4">
+                          <div className="space-y-0.5">
+                            <p className="text-slate-300 font-medium">{log.reason}</p>
+                            <p className="text-[10px] text-slate-500">
+                              By Recruiter on {new Date(log.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-[10px] text-slate-500 block">Override Score</span>
+                            <span className="font-bold text-indigo-400 text-xs">{log.new_value} (was {log.original_value})</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </>

@@ -8,6 +8,26 @@ export default function IntakeCopilotModal({ onClose, onWeightsSuggested }) {
   const [error, setError] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
 
+  const checkForJobIntakeWarnings = (text) => {
+    const warnings = [];
+    const lower = text.toLowerCase();
+    
+    if (lower.includes("recent graduate") || lower.includes("fresh graduate") || lower.includes("maximum age")) {
+      warnings.push("Potential Age Bias: Restricting candidates to recent graduates or age bands may exclude highly qualified older candidates.");
+    }
+    if (lower.includes("native english") || lower.includes("native speaker")) {
+      warnings.push("Potential Nationality Bias: Requiring 'native' language status rather than professional proficiency is restrictive and potentially discriminatory.");
+    }
+    if (lower.includes("rockstar") || lower.includes("ninja") || lower.includes("guru") || lower.includes("superhero")) {
+      warnings.push("Vague Terminology: Words like 'rockstar' or 'ninja' are vague, subjective, and can discourage diverse candidate applicants.");
+    }
+    if (lower.includes("must have degree from top") || lower.includes("ivy league")) {
+      warnings.push("Overly Restrictive: Restricting hiring to specific school tiers can exclude top candidates with equivalent professional backgrounds.");
+    }
+    
+    return warnings;
+  };
+
   const handleAnalyze = async (e) => {
     e.preventDefault();
     if (!notes.trim()) return;
@@ -66,6 +86,17 @@ export default function IntakeCopilotModal({ onClose, onWeightsSuggested }) {
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white placeholder-slate-650 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
                 />
               </div>
+
+              {notes.trim() && checkForJobIntakeWarnings(notes).length > 0 && (
+                <div className="p-3 bg-amber-950/20 border border-amber-900/40 text-amber-300 rounded-xl space-y-1">
+                  <span className="font-bold block text-amber-400">⚠️ AI Intake Calibration Alerts:</span>
+                  <ul className="list-disc pl-4 space-y-0.5 text-[10px]">
+                    {checkForJobIntakeWarnings(notes).map((w, idx) => (
+                      <li key={idx}>{w}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <button
                 type="submit"
