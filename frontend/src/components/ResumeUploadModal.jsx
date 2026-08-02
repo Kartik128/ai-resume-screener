@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Upload, FileCheck } from 'lucide-react';
 import api from '../services/api';
 
@@ -7,6 +7,19 @@ export default function ResumeUploadModal({ jobId, onClose, onUploaded }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+
+  useEffect(() => {
+    const preventDefault = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    window.addEventListener("dragover", preventDefault);
+    window.addEventListener("drop", preventDefault);
+    return () => {
+      window.removeEventListener("dragover", preventDefault);
+      window.removeEventListener("drop", preventDefault);
+    };
+  }, []);
 
   const handleDrag = (e) => {
     e.preventDefault();
