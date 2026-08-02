@@ -6,6 +6,26 @@ export default function ResumeUploadModal({ jobId, onClose, onUploaded }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFiles(Array.from(e.dataTransfer.files));
+    }
+  };
 
   const handleUpload = async () => {
     if (!files.length) return;
@@ -47,7 +67,17 @@ export default function ResumeUploadModal({ jobId, onClose, onUploaded }) {
 
         {!result ? (
           <div className="mt-4 space-y-4">
-            <div className="p-8 border-2 border-dashed border-slate-800 hover:border-blue-500 rounded-xl text-center">
+            <div 
+              onDragEnter={handleDrag}
+              onDragOver={handleDrag}
+              onDragLeave={handleDrag}
+              onDrop={handleDrop}
+              className={`p-8 border-2 border-dashed rounded-xl text-center transition-all ${
+                dragActive 
+                  ? 'border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/5 scale-[1.01]' 
+                  : 'border-slate-800 hover:border-blue-500 hover:bg-slate-900/20'
+              }`}
+            >
               <input
                 type="file"
                 multiple
@@ -102,3 +132,4 @@ export default function ResumeUploadModal({ jobId, onClose, onUploaded }) {
     </div>
   );
 }
+

@@ -11,6 +11,26 @@ export default function JobCreateModal({ onClose, onCreated }) {
   const [newMandatorySkill, setNewMandatorySkill] = useState('');
   const [newGoodSkill, setNewGoodSkill] = useState('');
   const [newResponsibility, setNewResponsibility] = useState('');
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+    }
+  };
 
   const handleParse = async () => {
     setLoading(true);
@@ -168,7 +188,17 @@ export default function JobCreateModal({ onClose, onCreated }) {
                 className="w-full p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
               />
             ) : (
-              <div className="p-8 border-2 border-dashed border-slate-800 hover:border-blue-500 rounded-xl text-center transition-colors">
+              <div 
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+                className={`p-8 border-2 border-dashed rounded-xl text-center transition-all ${
+                  dragActive 
+                    ? 'border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/5 scale-[1.01]' 
+                    : 'border-slate-800 hover:border-blue-500 hover:bg-slate-900/20'
+                }`}
+              >
                 <input
                   type="file"
                   accept=".pdf,.docx,.txt"
@@ -178,7 +208,7 @@ export default function JobCreateModal({ onClose, onCreated }) {
                 />
                 <label htmlFor="jd-upload-input" className="cursor-pointer block space-y-2">
                   <Upload className="w-8 h-8 text-blue-400 mx-auto" />
-                  <p className="text-xs text-slate-300 font-medium">Click to select PDF, DOCX, or TXT file</p>
+                  <p className="text-xs text-slate-300 font-medium">Drag & Drop or click to upload PDF, DOCX, or TXT</p>
                   {file && <p className="text-xs text-emerald-400 font-bold mt-1">✓ {file.name}</p>}
                 </label>
               </div>
