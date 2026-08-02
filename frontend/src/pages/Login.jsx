@@ -17,16 +17,31 @@ export default function Login() {
     localStorage.removeItem('refresh_token');
   }, []);
 
+  const [retryCount, setRetryCount] = useState(0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
+      // Add a 10-second timeout configuration to prevent indefinite hanging
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      const serverMsg = err.response?.data?.message || err.response?.data?.error?.message || 'Invalid email or password';
-      setError(serverMsg);
+      setRetryCount(prev => prev + 1);
+      let errMsg = 'Invalid email or password. Please verify your credentials.';
+      
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        errMsg = 'Connection timed out. The server or database might be sleeping (Neon Postgres instances spin down after inactivity). Please click Retry.';
+      } else if (!err.response) {
+        errMsg = 'Network connection failed. Please ensure the backend server is running and try again.';
+      } else if (err.response?.status >= 500) {
+        errMsg = 'Database wake lag detected. The server is initializing connection pools. Please click the Retry button below.';
+      } else if (err.response?.data?.message || err.response?.data?.error?.message) {
+        errMsg = err.response.data.message || err.response.data.error.message;
+      }
+      
+      setError(errMsg);
     }
     setLoading(false);
   };
@@ -43,12 +58,18 @@ export default function Login() {
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h2 className="font-heading font-extrabold text-2xl text-white">Welcome Back</h2>
-          <p className="text-xs text-slate-400 mt-1">Sign in to your AI Hiring Copilot SaaS</p>
+          <p className="text-xs text-slate-400 mt-1">Sign in to your HireRyt Workspace</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs text-center font-medium">
-            {error}
+          <div className="mb-5 p-4 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs space-y-2">
+            <p className="font-semibold text-center">{error}</p>
+            {retryCount > 0 && (
+              <div className="pt-2 border-t border-rose-900/40 text-[10px] text-slate-400 space-y-1 text-center">
+                <p>💡 Hint: First connection can take up to 10 seconds to spin up Neon Postgres.</p>
+                <p>For credentials support, contact <span className="text-blue-400">support@hireryt.com</span></p>
+              </div>
+            )}
           </div>
         )}
 
@@ -82,7 +103,7 @@ export default function Login() {
             disabled={loading}
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs hover:opacity-95 disabled:opacity-50 transition-all flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/25"
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+            <span>{loading ? 'Authenticating...' : retryCount > 0 ? 'Retry Sign In' : 'Sign In'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>

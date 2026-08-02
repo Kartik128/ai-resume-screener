@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, FunnelChart, Funnel, LabelList } from 'recharts';
 import { BarChart3, Users, Clock, Award, TrendingUp, Sparkles, Send, Loader2, MessageSquare } from 'lucide-react';
@@ -7,6 +8,7 @@ import api from '../services/api';
 import DashboardLayout from '../components/DashboardLayout';
 
 export default function Analytics() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,6 +54,20 @@ export default function Analytics() {
     fetchAnalytics();
   }, []);
 
+  const handleFunnelClick = (entry) => {
+    if (entry && entry.stage) {
+      // Map stages like "Shortlisted", "Rejected" to filters
+      const stageFilter = entry.stage.toLowerCase() === 'all candidates' ? '' : entry.stage.toLowerCase();
+      navigate(`/dashboard?status=${stageFilter}`);
+    }
+  };
+
+  const handleBarClick = (entry) => {
+    if (entry && entry.skill_name) {
+      navigate(`/dashboard?search=${encodeURIComponent(entry.skill_name)}`);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -65,65 +81,107 @@ export default function Analytics() {
         ) : data ? (
           <div className="space-y-6">
             {/* Top Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
-                  <Users className="w-6 h-6" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">Total Applicants</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.total_candidates > 0 ? data.total_candidates : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">Total Applicants</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.total_candidates}</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: SQL Candidates Table count mapped to company_id.
+                </p>
               </div>
 
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                  <Award className="w-6 h-6" />
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <Award className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">Avg Candidate Score</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.total_candidates > 0 ? `${data.average_candidate_score} / 100` : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">Avg Candidate Score</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.average_candidate_score} / 100</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: Arithmetic mean of all matched candidate scorecard scores.
+                </p>
               </div>
 
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                  <Clock className="w-6 h-6" />
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                    <Clock className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">Time to Hire</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.average_time_to_hire_days > 0 ? `${data.average_time_to_hire_days} Days` : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">Time to Hire</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.average_time_to_hire_days} Days</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: Mean elapsed days from intake start date to shortlist.
+                </p>
               </div>
 
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                  <TrendingUp className="w-6 h-6" />
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">Active Openings</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.total_jobs > 0 ? data.total_jobs : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">Active Openings</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.total_jobs}</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: Total active jobs count associated with your tenant.
+                </p>
               </div>
 
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400" title="Proportion of candidate scores accepted without overrides">
-                  <BarChart3 className="w-6 h-6" />
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400" title="Proportion of candidate scores accepted without overrides">
+                    <BarChart3 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">AI Agreement Rate</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.total_candidates > 0 && data.recruiter_ai_agreement_rate > 0 ? `${data.recruiter_ai_agreement_rate}%` : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">AI Agreement Rate</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.recruiter_ai_agreement_rate}%</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: Accepted scores without recruiter override actions.
+                </p>
               </div>
 
-              <div className="glass-card p-5 rounded-2xl border border-slate-800 flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400" title="Candidate Experience Net Promoter Score">
-                  <TrendingUp className="w-6 h-6" />
+              <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-2">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400" title="Candidate Experience Net Promoter Score">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-400">Candidate NPS</p>
+                    <p className="font-heading font-extrabold text-2xl text-white mt-0.5">
+                      {data.candidate_experience_nps !== 0 ? `${data.candidate_experience_nps > 0 ? '+' : ''}${data.candidate_experience_nps}` : 'Not enough data yet'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-400">Candidate NPS</p>
-                  <p className="font-heading font-extrabold text-2xl text-white mt-0.5">{data.candidate_experience_nps > 0 ? '+' : ''}{data.candidate_experience_nps}</p>
-                </div>
+                <p className="text-[10px] text-slate-500 pt-1 border-t border-slate-850">
+                  Source: Experience Net Promoter surveys parsed on candidate exit.
+                </p>
               </div>
             </div>
 
@@ -140,6 +198,8 @@ export default function Analytics() {
                         dataKey="count"
                         data={data.hiring_funnel.map(f => ({ ...f, name: f.stage }))}
                         isAnimationActive
+                        onClick={handleFunnelClick}
+                        className="cursor-pointer"
                       >
                         <LabelList position="right" fill="#94a3b8" stroke="none" dataKey="name" fontSize={11} />
                       </Funnel>
@@ -157,7 +217,13 @@ export default function Analytics() {
                       <XAxis dataKey="skill_name" stroke="#94a3b8" fontSize={12} />
                       <YAxis stroke="#64748b" fontSize={12} />
                       <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} />
-                      <Bar dataKey="percentage" fill="#ef4444" radius={[8, 8, 0, 0]} />
+                      <Bar 
+                        dataKey="percentage" 
+                        fill="#ef4444" 
+                        radius={[8, 8, 0, 0]} 
+                        onClick={handleBarClick}
+                        className="cursor-pointer"
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
