@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Star, Briefcase, Building2, GraduationCap, Award, MapPin, TrendingUp, Edit2 } from 'lucide-react';
 import ScoreOverridePanel from './ScoreOverridePanel';
 
@@ -26,38 +26,91 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
   const oc = scoreColor(overall);
   const [activeOverrideDim, setActiveOverrideDim] = useState(null);
 
+  // Drag anywhere logic
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    if (
+      e.target.closest('button') || 
+      e.target.closest('input') || 
+      e.target.closest('select') || 
+      e.target.closest('.interactive-override')
+    ) {
+      return;
+    }
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (isDragging) {
+        setPosition({
+          x: e.clientX - dragOffset.x,
+          y: e.clientY - dragOffset.y
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="w-full max-w-xl rounded-3xl border border-slate-800 bg-slate-900 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+      <div 
+        onMouseDown={handleMouseDown}
+        className="glass-card w-full max-w-xl rounded-2xl border border-slate-700/60 shadow-2xl flex flex-col select-none"
+        style={{ 
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          maxHeight: '90vh',
+          cursor: isDragging ? 'grabbing' : 'grab'
+        }}
+      >
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800 shrink-0 bg-slate-950/35">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/80 shrink-0">
           <div className="flex items-center space-x-3">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white text-base shadow-inner ${oc.bg} border border-slate-800`}>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-base shadow-inner ${oc.bg} border border-slate-800`}>
               {overall.toFixed(0)}
             </div>
             <div>
               <h2 className="font-heading font-bold text-white text-base leading-tight">
                 {candidate?.full_name}
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">AI Ranking Score Breakdown</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">AI Ranking Score Breakdown</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5 select-text">
           
           {/* AI Match Summary */}
           {bd?.match_summary && (
-            <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800/80 text-xs text-slate-300 leading-relaxed italic relative">
-              <span className="not-italic font-bold text-slate-500 uppercase tracking-wider text-[9px] block mb-1.5 flex items-center gap-1.5">
+            <div className="p-4 rounded-2xl bg-slate-950/50 border border-slate-800/80 text-xs text-slate-350 leading-relaxed italic relative">
+              <span className="not-italic font-bold text-slate-500 uppercase tracking-wider text-[9px] block mb-1.5 flex items-center gap-1.5 select-none">
                 <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                 <span>AI Fit Evaluation</span>
               </span>
@@ -67,8 +120,8 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
 
           {/* List of dimensions */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Scoring Components</h3>
-            <div className="space-y-3.5">
+            <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider select-none">Scoring Components</h3>
+            <div className="space-y-3">
               {DIMENSIONS.map((dim) => {
                 const scoreData = bd?.[dim.key];
                 if (!scoreData) return null;
@@ -77,9 +130,9 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
                 const isOverriding = activeOverrideDim === dim.key;
 
                 return (
-                  <div key={dim.key} className="p-3.5 rounded-2xl bg-slate-950/30 border border-slate-800/60 hover:border-slate-800 transition-all">
+                  <div key={dim.key} className="p-3.5 rounded-xl bg-slate-950/30 border border-slate-850 hover:border-slate-800 transition-all">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0 select-none">
                         <div className="w-7 h-7 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
                           <Icon className={`w-3.5 h-3.5 ${dim.color}`} />
                         </div>
@@ -89,7 +142,7 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-2.5 shrink-0">
+                      <div className="flex items-center gap-2.5 shrink-0 select-none">
                         <span className={`text-xs font-bold ${sc.text}`}>{scoreData.raw_score.toFixed(0)}/100</span>
                         {candidate.score_id && (
                           <button
@@ -108,7 +161,7 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden mt-3">
+                    <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden mt-3 select-none">
                       <div
                         className={`h-full rounded-full transition-all duration-700 ease-out ${sc.bar}`}
                         style={{ width: `${scoreData.raw_score}%` }}
@@ -131,7 +184,7 @@ export default function ScoreBreakdownModal({ candidate, onClose }) {
 
                     {/* Override Panel */}
                     {isOverriding && candidate.score_id && (
-                      <div className="mt-3 border-t border-slate-900 pt-3">
+                      <div className="mt-3 border-t border-slate-900 pt-3 interactive-override">
                         <ScoreOverridePanel
                           scoreId={candidate.score_id}
                           dimensionKey={dim.key}
